@@ -118,6 +118,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initializeAudioPlayer();
   loadSettings();
   initializeEventListeners();
+
   const startPage = parseInt(localStorage.getItem('currentPage')) || 1;
   const savedSura = parseInt(localStorage.getItem('currentSura')) || 1;
   const savedAyah = parseInt(localStorage.getItem('currentAyah')) || null;
