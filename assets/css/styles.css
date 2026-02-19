@@ -66,6 +66,32 @@ body {
   filter: invert(0.3) sepia(1) saturate(5) hue-rotate(-30deg);
 }
 
+/* ── Menu Button ───────────────────────────────────────────────────────────── */
+
+.menu-btn {
+  background-color: #8d6e63;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  width: 45px;
+  height: 45px;
+  font-size: 24px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-btn:hover {
+  background-color: #6d4c41;
+  transform: scale(1.05);
+}
+
+.menu-btn i {
+  line-height: 1;
+}
+
 /* ── Main Content ──────────────────────────────────────────────────────────── */
 
 .main-content {
@@ -83,6 +109,51 @@ body {
   border-bottom: 2px solid #d4c5a9;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   flex-shrink: 0;
+}
+
+.nav-btn {
+  background-color: #8d6e63;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.nav-btn:hover {
+  background-color: #6d4c41;
+  transform: scale(1.1);
+}
+
+.nav-btn:disabled {
+  background-color: #d4c5a9;
+  cursor: not-allowed;
+  transform: scale(1);
+}
+
+.page-info-wrapper {
+  min-width: 200px;
+  max-width: 500px;
+}
+
+#sura-title {
+  font-size: 24px;
+  color: #5d4037;
+  font-weight: bold;
+  margin: 0;
+}
+
+#page-info {
+  font-size: 15px;
+  color: #6d4c41;
+  margin: 0;
 }
 
 .quran-text-container {
