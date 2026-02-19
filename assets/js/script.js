@@ -630,3 +630,50 @@ function updatePauseButton() {
   if (pauseBtn) pauseBtn.textContent = text;
 }
 
+/** Switch the reciter while audio is actively playing */
+function changeReciterDuringPlayback(newReciter) {
+  if (!state.isPlaying || !state.currentAyah || !state.audioPlayer) return;
+
+  if (!state.audioPlayer.paused) {
+    const currentPlayingAyah = state.playQueue[state.currentPlayIndex];
+    const newAudioPath = buildAudioPath(
+      newReciter,
+      currentPlayingAyah.sura_no,
+      currentPlayingAyah.aya_no,
+    );
+
+    state.audioPlayer.src = newAudioPath;
+    state.audioPlayer.playbackRate = parseFloat(
+      getEl('speed-control')?.value || '1',
+    );
+    state.audioPlayer.play().catch((error) => {
+      console.error('Error playing audio with new reciter:', error);
+    });
+  }
+}
+
+/** Step playback speed up (+1) or down (-1) through the available speed options */
+function changeSpeed(direction) {
+  const speedSelect = getEl('speed-control');
+  const options = Array.from(speedSelect.options).map((o) =>
+    parseFloat(o.value),
+  );
+  const currentIndex = options.indexOf(parseFloat(speedSelect.value));
+  const newIndex = Math.max(
+    0,
+    Math.min(options.length - 1, currentIndex + direction),
+  );
+
+  if (newIndex === currentIndex) return; // already at min/max
+
+  const newSpeed = options[newIndex];
+  speedSelect.value = String(newSpeed);
+  if (state.audioPlayer) state.audioPlayer.playbackRate = newSpeed;
+  saveSetting('speed', String(newSpeed));
+
+  // Brief visual feedback on the speed selector
+  speedSelect.style.transition = 'background-color 0.2s';
+  speedSelect.style.backgroundColor = '#c8a96e44';
+  setTimeout(() => (speedSelect.style.backgroundColor = ''), 400);
+}
+
