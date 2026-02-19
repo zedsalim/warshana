@@ -6,7 +6,7 @@ const SURAH_NO_BASMALA = 9; // Surah At-Tawbah has no Basmala
 const state = {
   quranData: [],
   audioUrlsData: null,
-  localAudioCache: {}, // keyed by "reciter/sura" → true/false
+  localAudioCache: {},
   useLocalAudio: true,
   currentPage: 1,
   currentSura: 1,
@@ -109,7 +109,9 @@ async function checkLocalAudioAvailable(reciter, suraNo) {
   const testPath = buildAudioPath(reciter, suraNo, 1);
   try {
     const res = await fetch(testPath, { method: 'HEAD' });
-    state.localAudioCache[cacheKey] = res.ok;
+    const contentType = res.headers.get('Content-Type') || '';
+    const isAudio = res.ok && contentType.includes('audio');
+    state.localAudioCache[cacheKey] = isAudio;
   } catch {
     state.localAudioCache[cacheKey] = false;
   }
@@ -726,16 +728,33 @@ async function changeReciterDuringPlayback(newReciter) {
 
   if (!state.audioPlayer.paused) {
     const currentPlayingAyah = state.playQueue[state.currentPlayIndex];
-    const useLocal = await checkLocalAudioAvailable(newReciter, currentPlayingAyah.sura_no);
+    const useLocal = await checkLocalAudioAvailable(
+      newReciter,
+      currentPlayingAyah.sura_no,
+    );
     state.useLocalAudio = useLocal;
 
     const audioSrc = useLocal
-      ? buildAudioPath(newReciter, currentPlayingAyah.sura_no, currentPlayingAyah.aya_no)
-      : (getFallbackAudioUrl(newReciter, currentPlayingAyah.sura_no, currentPlayingAyah.aya_no) ||
-         buildAudioPath(newReciter, currentPlayingAyah.sura_no, currentPlayingAyah.aya_no));
+      ? buildAudioPath(
+          newReciter,
+          currentPlayingAyah.sura_no,
+          currentPlayingAyah.aya_no,
+        )
+      : getFallbackAudioUrl(
+          newReciter,
+          currentPlayingAyah.sura_no,
+          currentPlayingAyah.aya_no,
+        ) ||
+        buildAudioPath(
+          newReciter,
+          currentPlayingAyah.sura_no,
+          currentPlayingAyah.aya_no,
+        );
 
     state.audioPlayer.src = audioSrc;
-    state.audioPlayer.playbackRate = parseFloat(getEl('speed-control')?.value || '1');
+    state.audioPlayer.playbackRate = parseFloat(
+      getEl('speed-control')?.value || '1',
+    );
     state.audioPlayer.play().catch((error) => {
       console.error('Error playing audio with new reciter:', error);
     });
