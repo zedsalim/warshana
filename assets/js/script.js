@@ -117,6 +117,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initializeSelectors();
   initializeAudioPlayer();
   loadSettings();
+  initializeEventListeners();
   const startPage = parseInt(localStorage.getItem('currentPage')) || 1;
   const savedSura = parseInt(localStorage.getItem('currentSura')) || 1;
   const savedAyah = parseInt(localStorage.getItem('currentAyah')) || null;
@@ -698,3 +699,213 @@ function changeSpeed(direction) {
   setTimeout(() => (speedSelect.style.backgroundColor = ''), 400);
 }
 
+// ─── Event Listeners ──────────────────────────────────────────────────────────
+
+function initializeEventListeners() {
+  // Surah selector
+  getEl('surah-select').addEventListener('change', (e) => {
+    const suraNo = parseInt(e.target.value);
+    state.currentSura = suraNo;
+
+    const firstAyah = state.quranData.find(
+      (item) => item.sura_no === suraNo && item.aya_no === 1,
+    );
+
+    if (!firstAyah) return;
+
+    const pageNum = parseInt(firstAyah.page.split('-')[0]);
+    displayPage(pageNum, true);
+    getEl('surah-select').value = suraNo;
+    populateAyahSelector(suraNo);
+
+    state.currentAyah = firstAyah;
+    saveSetting('currentSura', suraNo);
+    saveSetting('currentAyah', firstAyah.aya_no);
+
+    setTimeout(() => {
+      activateAyahInDOM(suraNo, 1);
+      getEl('ayah-select').value = 1;
+      updatePageInfo(firstAyah);
+
+      if (getEl('reciter-select').value) playAudio();
+    }, 100);
+  });
+
+  // Juz selector
+  getEl('juz-select').addEventListener('change', (e) => {
+    const juzNo = parseInt(e.target.value);
+    state.currentJuz = juzNo;
+    saveSetting('currentJuz', juzNo);
+
+    const firstAyah = state.quranData.find((item) => item.jozz === juzNo);
+    if (firstAyah) {
+      const pageNum = parseInt(firstAyah.page.split('-')[0]);
+      displayPage(pageNum);
+      jumpToFirstAyahOfPage(pageNum);
+    }
+  });
+
+  // Page selector
+  getEl('page-select').addEventListener('change', (e) => {
+    const pageNum = parseInt(e.target.value);
+    displayPage(pageNum);
+    jumpToFirstAyahOfPage(pageNum);
+  });
+
+  // Ayah selector
+  getEl('ayah-select').addEventListener('change', (e) => {
+    const ayahNo = parseInt(e.target.value);
+    if (!ayahNo) return;
+
+    const ayahData = state.quranData.find(
+      (item) => item.sura_no === state.currentSura && item.aya_no === ayahNo,
+    );
+
+    if (!ayahData) return;
+
+    const ayahPage = parseInt(ayahData.page.split('-')[0]);
+    if (ayahPage !== state.currentPage) {
+      displayPage(ayahPage, true);
+      setTimeout(() => selectAndPlayAyah(ayahData), 200);
+    } else {
+      selectAndPlayAyah(ayahData);
+    }
+  });
+
+  // Reciter selector
+  getEl('reciter-select').addEventListener('change', (e) => {
+    const newReciter = e.target.value;
+    state.selectedReciter = newReciter;
+    saveSetting('reciter', newReciter);
+    changeReciterDuringPlayback(newReciter);
+  });
+
+  // Speed control
+  getEl('speed-control').addEventListener('change', (e) => {
+    const speed = e.target.value;
+    if (state.audioPlayer) state.audioPlayer.playbackRate = parseFloat(speed);
+    saveSetting('speed', speed);
+  });
+
+  // Repeat control
+  getEl('repeat-control').addEventListener('change', (e) => {
+    saveSetting('repeat', e.target.value);
+  });
+
+  // Play mode
+  getEl('play-mode').addEventListener('change', (e) => {
+    saveSetting('playMode', e.target.value);
+  });
+
+  // Font size control
+  getEl('font-size-control').addEventListener('change', (e) => {
+    applyFontSize(e.target.value);
+    saveSetting('fontSize', e.target.value);
+  });
+
+  // Page navigation buttons
+  getEl('prev-page').addEventListener('click', () => {
+    if (state.currentPage > 1) {
+      const newPage = state.currentPage - 1;
+      displayPage(newPage);
+      if (
+        state.isPlaying ||
+        (state.audioPlayer?.src && state.audioPlayer.src !== '')
+      ) {
+        jumpToFirstAyahOfPage(newPage);
+      }
+    }
+  });
+
+  getEl('next-page').addEventListener('click', () => {
+    if (state.currentPage < TOTAL_PAGES) {
+      const newPage = state.currentPage + 1;
+      displayPage(newPage);
+      if (
+        state.isPlaying ||
+        (state.audioPlayer?.src && state.audioPlayer.src !== '')
+      ) {
+        jumpToFirstAyahOfPage(newPage);
+      }
+    }
+  });
+
+  // Playback control buttons
+  getEl('play-btn').addEventListener('click', playAudio);
+  getEl('pause-btn').addEventListener('click', togglePauseResume);
+  getEl('stop-btn').addEventListener('click', stopAudio);
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    // Skip when the user is typing in a form element
+    if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
+
+    // Space → play / pause
+    if (e.code === 'Space') {
+      e.preventDefault();
+      const hasAudio = state.audioPlayer?.src && state.audioPlayer.src !== '';
+      if (hasAudio) {
+        togglePauseResume();
+      } else if (state.currentAyah) {
+        playAudio();
+      }
+      return;
+    }
+
+    // Number keys 0-9 → seek to that tenth of the audio (0 = 0%, 9 = 90%)
+    const numMatch = e.code.match(/^(?:Digit|Numpad)([0-9])$/);
+    if (
+      numMatch &&
+      state.audioPlayer?.src &&
+      state.audioPlayer.src !== '' &&
+      state.audioPlayer.duration
+    ) {
+      e.preventDefault();
+      const percent = parseInt(numMatch[1]) / 10;
+      state.audioPlayer.currentTime = state.audioPlayer.duration * percent;
+      return;
+    }
+
+    // Arrow Left → seek forward 5 s
+    if (
+      e.code === 'ArrowLeft' &&
+      state.audioPlayer?.src &&
+      state.audioPlayer.src !== ''
+    ) {
+      e.preventDefault();
+      state.audioPlayer.currentTime = Math.min(
+        state.audioPlayer.currentTime + 5,
+        state.audioPlayer.duration || 0,
+      );
+      return;
+    }
+
+    // Arrow Right → seek backward 5 s
+    if (
+      e.code === 'ArrowRight' &&
+      state.audioPlayer?.src &&
+      state.audioPlayer.src !== ''
+    ) {
+      e.preventDefault();
+      state.audioPlayer.currentTime = Math.max(
+        state.audioPlayer.currentTime - 5,
+        0,
+      );
+      return;
+    }
+
+    // + / = → increase playback speed
+    if (e.code === 'Equal' || e.code === 'NumpadAdd') {
+      e.preventDefault();
+      changeSpeed(1);
+      return;
+    }
+
+    // - → decrease playback speed
+    if (e.code === 'Minus' || e.code === 'NumpadSubtract') {
+      e.preventDefault();
+      changeSpeed(-1);
+      return;
+    }
+  });
+}
