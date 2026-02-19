@@ -92,6 +92,74 @@ body {
   line-height: 1;
 }
 
+/* ── Form Controls ─────────────────────────────────────────────────────────── */
+
+.form-label {
+  font-weight: bold;
+  color: #5d4037;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.form-select {
+  padding: 10px;
+  border: 1px solid #c4b5a0;
+  border-radius: 5px;
+  background-color: #faf7f0;
+  color: #3e2723;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.form-select:hover {
+  border-color: #a89379;
+  background-color: #ffffff;
+}
+
+.form-select:focus {
+  border-color: #8d6e63;
+  box-shadow: 0 0 5px rgba(141, 110, 99, 0.3);
+  background-color: #faf7f0;
+}
+
+/* ── Buttons ───────────────────────────────────────────────────────────────── */
+
+.btn-custom {
+  padding: 12px;
+  background-color: #8d6e63;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.btn-custom:hover {
+  background-color: #6d4c41;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-custom:active {
+  transform: translateY(0);
+  background-color: #6d4c41;
+  color: white;
+}
+
+/* ── Audio Player ──────────────────────────────────────────────────────────── */
+
+.audio-player-container {
+  margin-top: 15px;
+}
+
+#audio-player {
+  border-radius: 5px;
+}
+
 /* ── Main Content ──────────────────────────────────────────────────────────── */
 
 .main-content {
@@ -223,74 +291,6 @@ body {
   border: 2px solid #d4c5a9;
 }
 
-/* ── Form Controls ─────────────────────────────────────────────────────────── */
-
-.form-label {
-  font-weight: bold;
-  color: #5d4037;
-  font-size: 14px;
-  margin-bottom: 6px;
-}
-
-.form-select {
-  padding: 10px;
-  border: 1px solid #c4b5a0;
-  border-radius: 5px;
-  background-color: #faf7f0;
-  color: #3e2723;
-  font-size: 18px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.form-select:hover {
-  border-color: #a89379;
-  background-color: #ffffff;
-}
-
-.form-select:focus {
-  border-color: #8d6e63;
-  box-shadow: 0 0 5px rgba(141, 110, 99, 0.3);
-  background-color: #faf7f0;
-}
-
-/* ── Buttons ───────────────────────────────────────────────────────────────── */
-
-.btn-custom {
-  padding: 12px;
-  background-color: #8d6e63;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: bold;
-  transition: all 0.3s ease;
-}
-
-.btn-custom:hover {
-  background-color: #6d4c41;
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.btn-custom:active {
-  transform: translateY(0);
-  background-color: #6d4c41;
-  color: white;
-}
-
-/* ── Audio Player ──────────────────────────────────────────────────────────── */
-
-.audio-player-container {
-  margin-top: 15px;
-}
-
-#audio-player {
-  border-radius: 5px;
-}
-
 /* ── Scrollbar ─────────────────────────────────────────────────────────────── */
 
 ::-webkit-scrollbar {
@@ -308,4 +308,183 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #6d4c41;
+}
+
+/* ── Tablet ────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 991px) and (min-width: 768px) {
+  .quran-text {
+    font-size: 26px;
+    padding: 30px;
+  }
+
+  .sura-header {
+    font-size: 30px;
+  }
+
+  .basmala {
+    font-size: 26px;
+  }
+}
+
+/* ── Mobile ────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .header {
+    padding: 10px 5px;
+  }
+
+  .nav-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+
+  .menu-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+
+  .page-info-wrapper {
+    min-width: 150px;
+    max-width: 100%;
+  }
+
+  #sura-title {
+    font-size: 18px;
+  }
+
+  #page-info {
+    font-size: 12px;
+  }
+
+  .quran-text-container {
+    padding: 15px 10px;
+    padding-bottom: 30px;
+  }
+
+  .quran-text {
+    font-size: 20px;
+    padding: 20px 15px;
+    line-height: 2.2;
+    min-height: 300px;
+  }
+
+  .sura-header {
+    font-size: 24px;
+    padding: 12px;
+    margin: 15px 0;
+  }
+
+  .basmala {
+    font-size: 20px;
+    margin: 10px 0;
+  }
+
+  .offcanvas {
+    width: 280px !important;
+  }
+
+  .form-label {
+    font-size: 13px;
+  }
+
+  .form-select {
+    font-size: 13px;
+    padding: 8px;
+  }
+
+  .btn-custom {
+    padding: 10px;
+    font-size: 13px;
+  }
+}
+
+/* ── Extra Small Mobile ────────────────────────────────────────────────────── */
+
+@media (max-width: 374px) {
+  #sura-title {
+    font-size: 16px;
+  }
+
+  #page-info {
+    font-size: 11px;
+  }
+
+  .quran-text {
+    font-size: 18px;
+    padding: 15px 10px;
+  }
+
+  .sura-header {
+    font-size: 20px;
+  }
+
+  .basmala {
+    font-size: 18px;
+  }
+
+  .nav-btn,
+  .menu-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+}
+
+/* ── Landscape Mobile ──────────────────────────────────────────────────────── */
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .header {
+    padding: 8px 5px;
+  }
+
+  .nav-btn,
+  .menu-btn {
+    width: 35px;
+    height: 35px;
+  }
+
+  #sura-title {
+    font-size: 16px;
+  }
+
+  #page-info {
+    font-size: 12px;
+  }
+
+  .quran-text-container {
+    padding: 10px;
+  }
+
+  .quran-text {
+    padding: 15px;
+    font-size: 18px;
+    line-height: 2;
+  }
+}
+
+/* ── Print ─────────────────────────────────────────────────────────────────── */
+
+@media print {
+  .offcanvas,
+  .header,
+  .nav-btn,
+  .menu-btn {
+    display: none !important;
+  }
+
+  .main-content {
+    height: auto;
+  }
+
+  .quran-text-container {
+    padding: 0;
+  }
+
+  .quran-text {
+    box-shadow: none;
+    border: none;
+  }
 }
