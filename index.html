@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>وَرْشَنَا | Warshana</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/imgs/logo.png" />
+
+    <!-- Bootstrap RTL CSS -->
+    <link href="assets/css/bootstrap.rtl.min.css" rel="stylesheet" />
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="assets/css/bootstrap-icons.css" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/styles.css" />
+  </head>
+  <body>
+    <div class="container-fluid h-100 p-0">
+      <div class="row g-0 h-100">
+        <!-- Offcanvas Sidebar (placeholder) -->
+        <div
+          class="offcanvas offcanvas-start"
+          tabindex="-1"
+          id="offcanvasSidebar"
+          aria-labelledby="offcanvasSidebarLabel"
+        >
+          <div class="offcanvas-header">
+            <img
+              src="assets/imgs/logo.png"
+              alt="وَرْشَنَا"
+              height="40"
+              id="offcanvasSidebarLabel"
+            />
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="offcanvas"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="offcanvas-body"></div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="col-12 main-content">
+          <div class="header">
+            <div class="container-fluid">
+              <div class="row align-items-center">
+                <div class="col-auto">
+                  <button
+                    class="menu-btn"
+                    type="button"
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#offcanvasSidebar"
+                    aria-controls="offcanvasSidebar"
+                  >
+                    <i class="bi bi-list"></i>
+                  </button>
+                </div>
+                <div class="col text-center">
+                  <h3>وَرْشَنَا</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="quran-text-container">
+            <div class="container-fluid">
+              <div class="row justify-content-center">
+                <div class="col-12 col-lg-11 col-xl-10">
+                  <div id="quran-text" class="quran-text">
+                    <p style="text-align: center; color: #8d6e63">
+                      جاري التحميل...
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="assets/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
