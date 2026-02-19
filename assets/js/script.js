@@ -115,6 +115,16 @@ function showToast(message) {
 document.addEventListener('DOMContentLoaded', async () => {
   await loadQuranData();
   initializeSelectors();
+  const startPage = parseInt(localStorage.getItem('currentPage')) || 1;
+  const savedSura = parseInt(localStorage.getItem('currentSura')) || 1;
+  const savedAyah = parseInt(localStorage.getItem('currentAyah')) || null;
+
+  displayPage(startPage, true);
+
+  if (savedSura && savedAyah) {
+    // Allow the DOM to finish rendering before restoring the saved position
+    setTimeout(() => restoreSavedAyah(savedSura, savedAyah), 200);
+  }
 });
 
 // ─── Data Loading ─────────────────────────────────────────────────────────────
@@ -205,5 +215,99 @@ function updateSidebarSelectors() {
     getEl('surah-select').value = state.currentAyah.sura_no;
     getEl('ayah-select').value = state.currentAyah.aya_no;
   }
+}
+
+// ─── Page Display ─────────────────────────────────────────────────────────────
+
+function displayPage(pageNum, keepCurrentSura = false) {
+  state.currentPage = pageNum;
+  saveSetting('currentPage', pageNum);
+
+  const pageData = getAyahsOnPage(pageNum);
+  if (pageData.length === 0) return;
+
+  const quranTextDiv = getEl('quran-text');
+  quranTextDiv.innerHTML = '';
+
+  // Track which surah headers we've already rendered
+  const displayedSuraHeaders = new Set();
+  let previousSuraNo = null;
+
+  // Pre-compute which surahs begin on this page (determines whether to show Basmala)
+  const surahsStartingOnPage = new Set(
+    pageData.filter((a) => a.aya_no === 1).map((a) => a.sura_no),
+  );
+
+  pageData.forEach((ayah, index) => {
+    // Insert surah header + optional Basmala when we encounter a new surah
+    if (ayah.sura_no !== previousSuraNo) {
+      previousSuraNo = ayah.sura_no;
+
+      if (!displayedSuraHeaders.has(ayah.sura_no)) {
+        displayedSuraHeaders.add(ayah.sura_no);
+
+        const suraHeaderDiv = document.createElement('div');
+        suraHeaderDiv.className = 'sura-header';
+        suraHeaderDiv.textContent = ayah.sura_name_ar;
+        quranTextDiv.appendChild(suraHeaderDiv);
+
+        if (
+          surahsStartingOnPage.has(ayah.sura_no) &&
+          ayah.sura_no !== SURAH_NO_BASMALA
+        ) {
+          const basmalaDiv = document.createElement('div');
+          basmalaDiv.className = 'basmala';
+          basmalaDiv.textContent = 'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ';
+          quranTextDiv.appendChild(basmalaDiv);
+        }
+      }
+    }
+
+    if (index > 0 && ayah.line_start > pageData[index - 1].line_end) {
+      quranTextDiv.appendChild(document.createElement('br'));
+    }
+
+    const ayahSpan = document.createElement('span');
+    ayahSpan.className = 'ayah';
+    ayahSpan.dataset.sura = ayah.sura_no;
+    ayahSpan.dataset.ayah = ayah.aya_no;
+    ayahSpan.dataset.id = ayah.id;
+    ayahSpan.textContent = ayah.aya_text + ' ';
+    ayahSpan.addEventListener('click', (e) =>
+      handleAyahClickWithToggle(e, ayah),
+    );
+    quranTextDiv.appendChild(ayahSpan);
+  });
+
+  // Update header with surah info
+  const firstAyahOfCurrentSura = pageData.find(
+    (a) => a.sura_no === state.currentSura,
+  );
+  updatePageInfo(firstAyahOfCurrentSura || pageData[0]);
+
+  getEl('page-select').value = pageNum;
+
+  if (!keepCurrentSura) {
+    state.currentSura = pageData[0].sura_no;
+    getEl('surah-select').value = state.currentSura;
+    saveSetting('currentSura', state.currentSura);
+  }
+
+  // Always sync juz
+  state.currentJuz = pageData[0].jozz;
+  getEl('juz-select').value = state.currentJuz;
+  saveSetting('currentJuz', state.currentJuz);
+
+  populateAyahSelector(state.currentSura);
+
+  getEl('prev-page').disabled = state.currentPage === 1;
+  getEl('next-page').disabled = state.currentPage === TOTAL_PAGES;
+}
+
+/** Update the page header with surah name and juz/page numbers */
+function updatePageInfo(pageData) {
+  getEl('sura-title').textContent = pageData.sura_name_ar;
+  getEl('page-info').textContent =
+    `الجزء ${pageData.jozz} - صفحة ${state.currentPage}`;
 }
 
