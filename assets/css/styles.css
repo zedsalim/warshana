@@ -36,3 +36,32 @@ body {
   height: 100% !important;
   max-height: 100dvh !important;
 }
+
+/* ── Main Content ──────────────────────────────────────────────────────────── */
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  background-color: #f4ecd8;
+  overflow: hidden;
+  height: 100dvh;
+  max-height: 100dvh;
+}
+
+.header {
+  background-color: #e8dcc4;
+  padding: 15px 10px;
+  border-bottom: 2px solid #d4c5a9;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+.quran-text-container {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding: 30px 15px;
+  background: linear-gradient(to bottom, #f4ecd8, #ede3cf);
+}
