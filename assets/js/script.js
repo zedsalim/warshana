@@ -5,6 +5,9 @@ const SURAH_NO_BASMALA = 9; // Surah At-Tawbah has no Basmala
 // ─── State ────────────────────────────────────────────────────────────────────
 const state = {
   quranData: [],
+  audioUrlsData: null,
+  localAudioCache: {}, // keyed by "reciter/sura" → true/false
+  useLocalAudio: true,
   currentPage: 1,
   currentSura: 1,
   currentJuz: 1,
@@ -78,7 +81,40 @@ function buildAudioPath(reciter, suraNo, ayahNo) {
   return `assets/audio/${reciter}/${String(suraNo).padStart(3, '0')}/${String(ayahNo).padStart(3, '0')}.mp3`;
 }
 
-/** Show a non-blocking toast notification instead of alert() */
+/** Look up a fallback online URL from the loaded JSON for a given reciter/sura/ayah */
+function getFallbackAudioUrl(reciter, suraNo, ayahNo) {
+  if (!state.audioUrlsData) return null;
+  const reciters = state.audioUrlsData.reciters;
+  if (!reciters) return null;
+  const reciterData = reciters[reciter];
+  if (!reciterData) return null;
+  const suraKey = String(suraNo).padStart(3, '0');
+  const ayahKey = String(ayahNo).padStart(3, '0');
+  const ayahs = reciterData[suraKey];
+  if (!ayahs) return null;
+  const found = ayahs.find((a) => a.ayah === ayahKey);
+  return found ? found.url : null;
+}
+
+/**
+ * Check once (per reciter+surah) whether local audio files exist.
+ * Uses a HEAD request on ayah 001 of the surah as a proxy for the whole surah.
+ * Result is cached so subsequent calls are instant.
+ */
+async function checkLocalAudioAvailable(reciter, suraNo) {
+  const cacheKey = `${reciter}/${suraNo}`;
+  if (cacheKey in state.localAudioCache) {
+    return state.localAudioCache[cacheKey];
+  }
+  const testPath = buildAudioPath(reciter, suraNo, 1);
+  try {
+    const res = await fetch(testPath, { method: 'HEAD' });
+    state.localAudioCache[cacheKey] = res.ok;
+  } catch {
+    state.localAudioCache[cacheKey] = false;
+  }
+  return state.localAudioCache[cacheKey];
+}
 function showToast(message) {
   // Reuse an existing toast container or create one
   let container = document.getElementById('toast-container');
@@ -114,6 +150,7 @@ function showToast(message) {
 
 document.addEventListener('DOMContentLoaded', async () => {
   await loadQuranData();
+  await loadAudioUrlsData();
   initializeSelectors();
   initializeAudioPlayer();
   loadSettings();
@@ -180,6 +217,15 @@ async function loadQuranData() {
   } catch (error) {
     console.error('Error loading Quran data:', error);
     showToast('خطأ في تحميل بيانات القرآن الكريم');
+  }
+}
+
+async function loadAudioUrlsData() {
+  try {
+    const response = await fetch('assets/text/quran_audio_urls.json');
+    state.audioUrlsData = await response.json();
+  } catch (error) {
+    console.warn('Could not load audio URLs fallback data:', error);
   }
 }
 
@@ -456,7 +502,7 @@ function initializeAudioPlayer() {
   });
 }
 
-function playAudio() {
+async function playAudio() {
   state.selectedReciter = getEl('reciter-select').value;
 
   if (!state.selectedReciter) {
@@ -468,6 +514,13 @@ function playAudio() {
     showToast('الرجاء اختيار آية');
     return;
   }
+
+  // Check once whether local audio exists for this reciter+surah
+  const useLocal = await checkLocalAudioAvailable(
+    state.selectedReciter,
+    state.currentAyah.sura_no,
+  );
+  state.useLocalAudio = useLocal;
 
   buildPlayQueue();
 
@@ -525,14 +578,28 @@ function playNextInQueue() {
   const ayah = state.playQueue[state.currentPlayIndex];
   state.selectedReciter = getEl('reciter-select')?.value || '';
 
-  const audioPath = buildAudioPath(
-    state.selectedReciter,
-    ayah.sura_no,
-    ayah.aya_no,
-  );
+  // When crossing into a new surah during queue playback, re-check local availability
+  const cacheKey = `${state.selectedReciter}/${ayah.sura_no}`;
+  if (!(cacheKey in state.localAudioCache)) {
+    // Async re-check for new surah; temporarily assume same strategy
+    checkLocalAudioAvailable(state.selectedReciter, ayah.sura_no).then((ok) => {
+      state.useLocalAudio = ok;
+    });
+  } else {
+    state.useLocalAudio = state.localAudioCache[cacheKey];
+  }
+
+  let audioSrc;
+  if (state.useLocalAudio) {
+    audioSrc = buildAudioPath(state.selectedReciter, ayah.sura_no, ayah.aya_no);
+  } else {
+    audioSrc =
+      getFallbackAudioUrl(state.selectedReciter, ayah.sura_no, ayah.aya_no) ||
+      buildAudioPath(state.selectedReciter, ayah.sura_no, ayah.aya_no);
+  }
 
   if (state.audioPlayer) {
-    state.audioPlayer.src = audioPath;
+    state.audioPlayer.src = audioSrc;
     state.audioPlayer.playbackRate = parseFloat(
       getEl('speed-control')?.value || '1',
     );
@@ -654,21 +721,21 @@ function updatePauseButton() {
 }
 
 /** Switch the reciter while audio is actively playing */
-function changeReciterDuringPlayback(newReciter) {
+async function changeReciterDuringPlayback(newReciter) {
   if (!state.isPlaying || !state.currentAyah || !state.audioPlayer) return;
 
   if (!state.audioPlayer.paused) {
     const currentPlayingAyah = state.playQueue[state.currentPlayIndex];
-    const newAudioPath = buildAudioPath(
-      newReciter,
-      currentPlayingAyah.sura_no,
-      currentPlayingAyah.aya_no,
-    );
+    const useLocal = await checkLocalAudioAvailable(newReciter, currentPlayingAyah.sura_no);
+    state.useLocalAudio = useLocal;
 
-    state.audioPlayer.src = newAudioPath;
-    state.audioPlayer.playbackRate = parseFloat(
-      getEl('speed-control')?.value || '1',
-    );
+    const audioSrc = useLocal
+      ? buildAudioPath(newReciter, currentPlayingAyah.sura_no, currentPlayingAyah.aya_no)
+      : (getFallbackAudioUrl(newReciter, currentPlayingAyah.sura_no, currentPlayingAyah.aya_no) ||
+         buildAudioPath(newReciter, currentPlayingAyah.sura_no, currentPlayingAyah.aya_no));
+
+    state.audioPlayer.src = audioSrc;
+    state.audioPlayer.playbackRate = parseFloat(getEl('speed-control')?.value || '1');
     state.audioPlayer.play().catch((error) => {
       console.error('Error playing audio with new reciter:', error);
     });
