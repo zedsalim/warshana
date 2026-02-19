@@ -5,7 +5,7 @@
 </p>
 <hr/>
 
-A lightweight, offline/online-friendly Mushaf **Warsh** web app (Arabic / RTL) that lets you browse the Qur’an by Surah, Juz’, or Page and listen verse-by-verse audio with playback controls.
+A lightweight, offline/online-friendly Mushaf **Warsh** web app (Arabic / RTL) that lets you browse the Qur'an by Surah, Juz', or Page and listen verse-by-verse audio with playback controls.
 
 ## Screenshots
 
@@ -25,15 +25,75 @@ A lightweight, offline/online-friendly Mushaf **Warsh** web app (Arabic / RTL) t
 - Active ayah highlighting with auto-scroll
 - Settings persist via `localStorage` across sessions
 
+## Running the App
+
+### 1. Get the code
+
+Clone the repo or download it as a ZIP:
+
+```bash
+git clone https://github.com/zedsalim/warshana
+cd warshana
+```
+
+### 2. Serve it locally
+
+The app must be served over HTTP — opening `index.html` directly won't work. Pick any of these:
+
+```bash
+# Python 3
+python -m http.server 3000
+
+# Python 2
+python -m SimpleHTTPServer 3000
+
+# Node.js (npx)
+npx serve .
+
+# VS Code
+# Install the "Live Server" extension and click "Go Live"
+```
+
+Then open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## Offline Audio Setup
+
+By default the web app streams audio from online URLs. To use it **fully offline**, download the audio files and place them locally:
+
+**1. Download the audio files**
+
+Download the reciter folder(s) from Google Drive:
+[📁 Download Audio — Google Drive](https://drive.google.com/drive/u/0/folders/1UcPZ2EhHTT3mEWRUMgMUzjWEes07yIWx)
+
+**2. Place them in the right folder**
+
+Extract / move the downloaded folder(s) into:
+
+```
+assets/
+└── audio/
+    └── abdelbasset_abdessamad/   ← folder name must match exactly
+        ├── 001/
+        │   ├── 001.mp3
+        │   ├── 002.mp3
+        │   └── ...
+        ├── 002/
+        └── ...
+```
+
+**3. Run the local server and enjoy offline**
+
+The web app automatically detects whether local audio files are present and uses them. If they're missing it falls back to streaming online. No configuration needed.
+
 ## Keyboard Shortcuts
 
-| Key | Action |
-|---|---|
-| `Space` | Play / Pause |
-| `ArrowLeft` | Seek forward 5s |
-| `ArrowRight` | Seek backward 5s |
-| `0–9` | Seek to 0%–90% |
-| `+` / `-` | Increase / Decrease speed |
+| Key          | Action                    |
+| ------------ | ------------------------- |
+| `Space`      | Play / Pause              |
+| `ArrowLeft`  | Seek forward 5s           |
+| `ArrowRight` | Seek backward 5s          |
+| `0–9`        | Seek to 0%–90%            |
+| `+` / `-`    | Increase / Decrease speed |
 
 ## Credits
 
