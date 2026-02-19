@@ -127,6 +127,24 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
+/** Restore the previously selected ayah after the page has been rendered */
+function restoreSavedAyah(suraNo, ayahNo) {
+  const ayahData = state.quranData.find(
+    (item) => item.sura_no === suraNo && item.aya_no === ayahNo,
+  );
+
+  if (!ayahData) return;
+
+  state.currentAyah = ayahData;
+  state.currentSura = suraNo;
+
+  getEl('surah-select').value = suraNo;
+  populateAyahSelector(suraNo);
+  getEl('ayah-select').value = ayahNo;
+  updatePageInfo(ayahData);
+  activateAyahInDOM(suraNo, ayahNo);
+}
+
 // ─── Data Loading ─────────────────────────────────────────────────────────────
 
 async function loadQuranData() {
