@@ -70,7 +70,7 @@ By default the app streams audio from online URLs. To use it **fully offline**, 
 **1. Download the audio files**
 
 Download the reciter folder(s) from Google Drive:
-[📁 Download Audio — Google Drive](https://drive.google.com/drive/u/0/folders/1UcPZ2EhHTT3mEWRUMgMUzjWEes07yIWx)
+[📁 Download Audio — Google Drive](https://drive.google.com/drive/folders/10Iujd_rNoflXmSNfwkyPmmq9aOCLSejO?usp=drive_link)
 
 **2. Place them in the right folder**
 
@@ -106,5 +106,5 @@ The app automatically detects whether local audio files are present (via a singl
 
 - **Qur'an text (Warsh):** [King Fahd Glorious Qur'an Printing Complex](https://qurancomplex.gov.sa/quran-dev/)
 - **Audio:** [VerseByVerseQuran.com](https://www.versebyversequran.com/)
-- **Font:** Maghribi-style Uthmanic Warsh script (`uthmanic_warsh_v21.ttf`)
+- **Font:** Maghribi-style Uthmanic Warsh script (`uthmanic_warsh_v21.ttf`) By [King Fahd Glorious Qur'an Printing Complex](https://qurancomplex.gov.sa/quran-dev/)
 - **UI framework:** Bootstrap 5 RTL
