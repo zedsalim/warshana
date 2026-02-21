@@ -99,8 +99,8 @@ The app automatically detects whether local audio files are present (via a singl
 | Key          | Action                    |
 | ------------ | ------------------------- |
 | `Space`      | Play / Pause              |
-| `ArrowLeft`  | Seek forward 5s           |
-| `ArrowRight` | Seek backward 5s          |
+| `ArrowLeft`  | Next ayah                 |
+| `ArrowRight` | Previous ayah             |
 | `0–9`        | Seek to 0%–90%            |
 | `+` / `-`    | Increase / Decrease speed |
 

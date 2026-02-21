@@ -864,6 +864,34 @@ function changeSpeed(direction) {
   setTimeout(() => (speedSelect.style.backgroundColor = ''), 400);
 }
 
+/**
+ * Navigate to an ayah: switch page if needed, update selectors,
+ * highlight the ayah, and resume playback if audio was active.
+ */
+function navigateToAyah(ayahData) {
+  const targetPage = parseInt(ayahData.page.split('-')[0]);
+  const wasPlaying = state.isPlaying;
+
+  if (wasPlaying) stopAudio();
+
+  if (targetPage !== state.currentPage) {
+    displayPage(targetPage, true);
+    setTimeout(() => {
+      setCurrentAyah(ayahData, { play: wasPlaying });
+      populateAyahSelector(ayahData.sura_no);
+      getEl('surah-select').value = ayahData.sura_no;
+      getEl('ayah-select').value = ayahData.aya_no;
+    }, 150);
+  } else {
+    if (ayahData.sura_no !== state.currentSura) {
+      populateAyahSelector(ayahData.sura_no);
+      getEl('surah-select').value = ayahData.sura_no;
+    }
+    setCurrentAyah(ayahData, { play: wasPlaying });
+    getEl('ayah-select').value = ayahData.aya_no;
+  }
+}
+
 // ─── Event Listeners ──────────────────────────────────────────────────────────
 
 function initializeEventListeners() {
@@ -1031,31 +1059,51 @@ function initializeEventListeners() {
       return;
     }
 
-    // Arrow Left → seek forward 5 s
-    if (
-      e.code === 'ArrowLeft' &&
-      state.audioPlayer?.src &&
-      state.audioPlayer.src !== ''
-    ) {
+    // Arrow Left → next ayah (or first ayah of next surah if at end)
+    if (e.code === 'ArrowLeft') {
       e.preventDefault();
-      state.audioPlayer.currentTime = Math.min(
-        state.audioPlayer.currentTime + 5,
-        state.audioPlayer.duration || 0,
-      );
+      if (state.currentAyah) {
+        const nextAyah = state.quranData.find(
+          (item) =>
+            item.sura_no === state.currentAyah.sura_no &&
+            item.aya_no === state.currentAyah.aya_no + 1,
+        );
+        if (nextAyah) {
+          navigateToAyah(nextAyah);
+        } else {
+          // End of surah — try first ayah of next surah
+          const nextSurahFirstAyah = state.quranData.find(
+            (item) =>
+              item.sura_no === state.currentAyah.sura_no + 1 &&
+              item.aya_no === 1,
+          );
+          if (nextSurahFirstAyah) navigateToAyah(nextSurahFirstAyah);
+        }
+      }
       return;
     }
 
-    // Arrow Right → seek backward 5 s
-    if (
-      e.code === 'ArrowRight' &&
-      state.audioPlayer?.src &&
-      state.audioPlayer.src !== ''
-    ) {
+    // Arrow Right → prev ayah (or last ayah of prev surah if at start)
+    if (e.code === 'ArrowRight') {
       e.preventDefault();
-      state.audioPlayer.currentTime = Math.max(
-        state.audioPlayer.currentTime - 5,
-        0,
-      );
+      if (state.currentAyah) {
+        const prevAyah = state.quranData.find(
+          (item) =>
+            item.sura_no === state.currentAyah.sura_no &&
+            item.aya_no === state.currentAyah.aya_no - 1,
+        );
+        if (prevAyah) {
+          navigateToAyah(prevAyah);
+        } else if (state.currentAyah.sura_no > 1) {
+          // Start of surah — go to last ayah of previous surah
+          const prevSuraAyahs = state.quranData.filter(
+            (item) => item.sura_no === state.currentAyah.sura_no - 1,
+          );
+          if (prevSuraAyahs.length > 0) {
+            navigateToAyah(prevSuraAyahs[prevSuraAyahs.length - 1]);
+          }
+        }
+      }
       return;
     }
 
