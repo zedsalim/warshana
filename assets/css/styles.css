@@ -296,6 +296,99 @@ body {
   border: 2px solid #d4c5a9;
 }
 
+/* ── Bottom Controls Bar ───────────────────────────────────────────────────── */
+
+.bottom-controls {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 7px 14px;
+  background: linear-gradient(135deg, #3e2723ee, #5d4037f5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid #8d6e6340;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.25);
+}
+
+.ctrl-btn {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f4ecd8;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.ctrl-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+  color: #fff;
+}
+
+.ctrl-btn:active {
+  transform: scale(0.95);
+}
+
+.ctrl-btn--primary {
+  width: 42px;
+  height: 42px;
+  font-size: 18px;
+  background: #c4a882;
+  border-color: #c4a882;
+  color: #3e2723;
+  box-shadow: 0 2px 10px rgba(196, 168, 130, 0.4);
+}
+
+.ctrl-btn--primary:hover {
+  background: #d4b892;
+  border-color: #d4b892;
+  color: #3e2723;
+  box-shadow: 0 4px 16px rgba(196, 168, 130, 0.6);
+}
+
+.speed-btn {
+  width: 28px;
+  height: 28px;
+  font-size: 12px;
+}
+
+.speed-label {
+  color: #f4ecd8;
+  font-family: 'Amiri', Arial, sans-serif;
+  font-size: 13px;
+  min-width: 28px;
+  text-align: center;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+.ctrl-divider {
+  width: 1px;
+  height: 26px;
+  background: rgba(255, 255, 255, 0.15);
+  margin: 0 3px;
+  flex-shrink: 0;
+}
+
+/* Push quran content above the bottom bar */
+.quran-text-container {
+  padding-bottom: 66px !important;
+}
+
 /* ── Scrollbar ─────────────────────────────────────────────────────────────── */
 
 ::-webkit-scrollbar {
@@ -335,6 +428,36 @@ body {
 /* ── Mobile ────────────────────────────────────────────────────────────────── */
 
 @media (max-width: 767px) {
+  /* Bottom Controls */
+  .bottom-controls {
+    gap: 3px;
+    padding: 6px 8px;
+  }
+
+  .ctrl-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 13px;
+  }
+
+  .ctrl-btn--primary {
+    width: 38px;
+    height: 38px;
+    font-size: 16px;
+  }
+
+  .speed-btn {
+    width: 24px;
+    height: 24px;
+    font-size: 11px;
+  }
+
+  .speed-label {
+    font-size: 12px;
+    min-width: 24px;
+  }
+
+  /* Header */
   .header {
     padding: 10px 5px;
   }
@@ -364,6 +487,7 @@ body {
     font-size: 12px;
   }
 
+  /* Quran Text */
   .quran-text-container {
     padding: 15px 10px;
     padding-bottom: 30px;
@@ -389,10 +513,12 @@ body {
     margin: 10px 0;
   }
 
+  /* Offcanvas */
   .offcanvas {
     width: 280px !important;
   }
 
+  /* Forms */
   .form-label {
     font-size: 13px;
   }
@@ -482,7 +608,8 @@ body {
   .offcanvas,
   .header,
   .nav-btn,
-  .menu-btn {
+  .menu-btn,
+  .bottom-controls {
     display: none !important;
   }
 

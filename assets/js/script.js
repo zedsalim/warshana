@@ -118,14 +118,14 @@ async function checkLocalAudioAvailable(reciter, suraNo) {
   }
   return state.localAudioCache[cacheKey];
 }
+
 function showToast(message) {
-  // Reuse an existing toast container or create one
   let container = document.getElementById('toast-container');
   if (!container) {
     container = document.createElement('div');
     container.id = 'toast-container';
     container.style.cssText =
-      'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;';
+      'position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;';
     document.body.appendChild(container);
   }
 
@@ -135,14 +135,12 @@ function showToast(message) {
     'background:#5d4037;color:#fff;padding:12px 24px;border-radius:8px;font-family:Amiri,Arial,sans-serif;font-size:16px;box-shadow:0 4px 12px rgba(0,0,0,0.25);opacity:0;transition:opacity 0.3s;';
   container.appendChild(toast);
 
-  // Fade in
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       toast.style.opacity = '1';
     });
   });
 
-  // Fade out and remove after 3 s
   setTimeout(() => {
     toast.style.opacity = '0';
     setTimeout(() => toast.remove(), 350);
@@ -158,6 +156,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initializeAudioPlayer();
   loadSettings();
   initializeEventListeners();
+  initializeBottomControls();
 
   const startPage = parseInt(localStorage.getItem('currentPage')) || 1;
   const savedSura = parseInt(localStorage.getItem('currentSura')) || 1;
@@ -774,19 +773,25 @@ function stopAudio() {
   state.playQueue = [];
 
   updatePauseButton();
+  syncBottomPlayIcon();
 }
 
 function togglePauseResume() {
   if (!state.audioPlayer) return;
 
-  // If paused with no source at all, start fresh
-  if (state.audioPlayer.paused && !state.audioPlayer.src && state.currentAyah) {
-    playAudio();
+  const hasSrc =
+    state.audioPlayer.src &&
+    state.audioPlayer.src !== '' &&
+    state.audioPlayer.src !== window.location.href;
+  if (!hasSrc) {
+    if (state.currentAyah) playAudio();
     return;
   }
 
   if (state.audioPlayer.paused) {
-    state.audioPlayer.play();
+    state.audioPlayer.play().catch(() => {
+      if (state.currentAyah) playAudio();
+    });
   } else {
     state.audioPlayer.pause();
   }
@@ -862,6 +867,8 @@ function changeSpeed(direction) {
   speedSelect.style.transition = 'background-color 0.2s';
   speedSelect.style.backgroundColor = '#c8a96e44';
   setTimeout(() => (speedSelect.style.backgroundColor = ''), 400);
+
+  syncBottomSpeedLabel();
 }
 
 /**
@@ -1121,4 +1128,85 @@ function initializeEventListeners() {
       return;
     }
   });
+}
+
+// ─── Bottom Controls Bar ──────────────────────────────────────────────────────
+
+/** Keep the bottom speed label in sync with the sidebar speed selector */
+function syncBottomSpeedLabel() {
+  const sel = getEl('speed-control');
+  const label = getEl('bottom-speed-label');
+  if (sel && label) label.textContent = parseFloat(sel.value) + 'x';
+}
+
+/** Sync the play/pause icon in the bottom bar to match actual playback state */
+function syncBottomPlayIcon() {
+  const icon = getEl('bottom-play-icon');
+  if (!icon) return;
+  icon.className = state.isPlaying ? 'bi bi-pause-fill' : 'bi bi-play-fill';
+}
+
+/** Bottom bar play/pause button handler */
+function bottomPlayPause() {
+  const hasAudio = state.audioPlayer?.src && state.audioPlayer.src !== '';
+  if (hasAudio) {
+    togglePauseResume();
+  } else if (state.currentAyah) {
+    playAudio();
+  }
+  setTimeout(syncBottomPlayIcon, 100);
+}
+
+/** Bottom bar — navigate to next ayah, or first ayah of next surah */
+function bottomNavNext() {
+  if (!state.currentAyah) return;
+  const next = state.quranData.find(
+    (i) =>
+      i.sura_no === state.currentAyah.sura_no &&
+      i.aya_no === state.currentAyah.aya_no + 1,
+  );
+  if (next) {
+    navigateToAyah(next);
+    return;
+  }
+  const nextSura = state.quranData.find(
+    (i) => i.sura_no === state.currentAyah.sura_no + 1 && i.aya_no === 1,
+  );
+  if (nextSura) navigateToAyah(nextSura);
+}
+
+/** Bottom bar — navigate to previous ayah, or last ayah of previous surah */
+function bottomNavPrev() {
+  if (!state.currentAyah) return;
+  const prev = state.quranData.find(
+    (i) =>
+      i.sura_no === state.currentAyah.sura_no &&
+      i.aya_no === state.currentAyah.aya_no - 1,
+  );
+  if (prev) {
+    navigateToAyah(prev);
+    return;
+  }
+  if (state.currentAyah.sura_no > 1) {
+    const prevSuraAyahs = state.quranData.filter(
+      (i) => i.sura_no === state.currentAyah.sura_no - 1,
+    );
+    if (prevSuraAyahs.length)
+      navigateToAyah(prevSuraAyahs[prevSuraAyahs.length - 1]);
+  }
+}
+
+/** Wire up bottom bar sync listeners — called once after DOM + settings are ready */
+function initializeBottomControls() {
+  syncBottomSpeedLabel();
+
+  const player = getEl('audio-player');
+  if (player) {
+    player.addEventListener('play', () => setTimeout(syncBottomPlayIcon, 50));
+    player.addEventListener('pause', () => setTimeout(syncBottomPlayIcon, 50));
+    player.addEventListener('ended', () => setTimeout(syncBottomPlayIcon, 50));
+  }
+
+  const speedSel = getEl('speed-control');
+  if (speedSel) speedSel.addEventListener('change', syncBottomSpeedLabel);
 }

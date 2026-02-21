@@ -119,13 +119,13 @@
 
             <div class="d-grid gap-2 mb-3">
               <button id="play-btn" class="btn btn-custom">
-                &#9654; تشغيل
+                <i class="bi bi-play-fill"></i> تشغيل
               </button>
               <button id="pause-btn" class="btn btn-custom">
-                &#9208; إيقاف مؤقت
+                <i class="bi bi-pause-fill"></i> إيقاف مؤقت
               </button>
               <button id="stop-btn" class="btn btn-custom">
-                &#9209; إيقاف
+                <i class="bi bi-stop-fill"></i> إيقاف
               </button>
             </div>
 
@@ -184,6 +184,47 @@
           </div>
         </main>
       </div>
+    </div>
+
+    <!-- Bottom Controls Bar -->
+    <div class="bottom-controls" id="bottom-controls">
+      <button
+        class="ctrl-btn speed-btn"
+        onclick="changeSpeed(-1)"
+        title="تقليل السرعة"
+      >
+        <i class="bi bi-dash-lg"></i>
+      </button>
+      <span class="speed-label" id="bottom-speed-label">1x</span>
+      <button
+        class="ctrl-btn speed-btn"
+        onclick="changeSpeed(1)"
+        title="زيادة السرعة"
+      >
+        <i class="bi bi-plus-lg"></i>
+      </button>
+
+      <div class="ctrl-divider"></div>
+
+      <button class="ctrl-btn" onclick="bottomNavPrev()" title="الآية السابقة">
+        <i class="bi bi-skip-end-fill"></i>
+      </button>
+
+      <button
+        class="ctrl-btn ctrl-btn--primary"
+        onclick="bottomPlayPause()"
+        id="bottom-play-pause"
+        title="تشغيل / إيقاف مؤقت"
+      >
+        <i class="bi bi-play-fill" id="bottom-play-icon"></i>
+      </button>
+      <button class="ctrl-btn" onclick="stopAudio()" title="إيقاف">
+        <i class="bi bi-stop-fill"></i>
+      </button>
+
+      <button class="ctrl-btn" onclick="bottomNavNext()" title="الآية التالية">
+        <i class="bi bi-skip-start-fill"></i>
+      </button>
     </div>
 
     <!-- Bootstrap JS Bundle -->
