@@ -2,6 +2,47 @@
 const TOTAL_PAGES = 604;
 const SURAH_NO_BASMALA = 9; // Surah At-Tawbah has no Basmala
 
+/**
+ * Riwaya configuration.
+ * Each entry defines:
+ *   - textFile   : path to the JSON data file for that riwaya's text
+ *   - audioDir   : subfolder inside assets/audio/ for offline files
+ *   - audioUrls  : array of fallback URL JSON file paths (online streaming)
+ *   - font       : CSS font-family name to apply when this riwaya is active
+ *   - reciters   : map of reciter value → Arabic display name
+ */
+const RIWAYA_CONFIG = {
+  warsh: {
+    textFile: 'assets/text/UthmanicWarsh/warshData_v2-1.json',
+    audioDir: 'warsh',
+    audioUrls: [
+      'assets/audio/quran_audio_urls-1_warsh.json',
+      'assets/audio/quran_audio_urls-2_warsh.json',
+      'assets/audio/quran_audio_urls-3_warsh.json',
+      'assets/audio/quran_audio_urls-4_warsh.json',
+      'assets/audio/quran_audio_urls-5_warsh.json',
+    ],
+    font: 'Uthmanic',
+    reciters: {
+      abdelbasset_abdessamad: 'عبد الباسط عبد الصمد',
+    },
+  },
+  hafs: {
+    textFile: 'assets/text/UthmanicHafs/hafsData_v2-0.json',
+    audioDir: 'hafs',
+    audioUrls: [
+      'assets/audio/quran_audio_urls-1_hafs.json',
+      'assets/audio/quran_audio_urls-2_hafs.json',
+      'assets/audio/quran_audio_urls-3_hafs.json',
+      'assets/audio/quran_audio_urls-4_hafs.json',
+    ],
+    font: 'UthmanicHafs',
+    reciters: {
+      abdelbasset_abdessamad: 'عبد الباسط عبد الصمد',
+    },
+  },
+};
+
 // ─── State ────────────────────────────────────────────────────────────────────
 const state = {
   quranData: [],
@@ -12,6 +53,7 @@ const state = {
   currentSura: 1,
   currentJuz: 1,
   currentAyah: null,
+  currentRiwaya: 'warsh',
   selectedReciter: '',
   audioPlayer: null,
   playQueue: [],
@@ -20,6 +62,7 @@ const state = {
   currentRepeatCount: 0,
   currentPlayModeRepeatCount: 0,
   isPlaying: false,
+  isSwitchingRiwaya: false,
 };
 
 // ─── Utilities ────────────────────────────────────────────────────────────────
@@ -79,7 +122,9 @@ function activateAyahInDOM(suraNo, ayahNo) {
 
 /** Build the audio file path for a given reciter and ayah */
 function buildAudioPath(reciter, suraNo, ayahNo) {
-  return `assets/audio/${reciter}/${String(suraNo).padStart(3, '0')}/${String(ayahNo).padStart(3, '0')}.mp3`;
+  const cfg = RIWAYA_CONFIG[state.currentRiwaya];
+  const audioDir = cfg ? cfg.audioDir : state.currentRiwaya;
+  return `assets/audio/${audioDir}/${reciter}/${String(suraNo).padStart(3, '0')}/${String(ayahNo).padStart(3, '0')}.mp3`;
 }
 
 /**
@@ -165,11 +210,19 @@ function showToast(message) {
 // ─── Initialisation ───────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // Load riwaya preference before fetching any data
+  const savedRiwaya = localStorage.getItem('riwaya') || 'warsh';
+  state.currentRiwaya = savedRiwaya;
+  const riwayaSelect = getEl('riwaya-select');
+  if (riwayaSelect) riwayaSelect.value = savedRiwaya;
+
   await loadQuranData();
   await loadAudioUrlsData();
   initializeSelectors();
   initializeAudioPlayer();
   loadSettings();
+  applyRiwayaFont();
+  populateReciterOptions();
   initializeEventListeners();
   initializeBottomControls();
 
@@ -220,10 +273,7 @@ function restoreSavedAyah(suraNo, ayahNo) {
 
 /** Load persisted user settings from localStorage */
 function loadSettings() {
-  const savedReciter =
-    localStorage.getItem('reciter') || 'abdelbasset_abdessamad';
-  getEl('reciter-select').value = savedReciter;
-
+  // Reciter is populated separately in populateReciterOptions()
   const savedSpeed = localStorage.getItem('speed') || '1';
   getEl('speed-control').value = savedSpeed;
 
@@ -242,10 +292,16 @@ function loadSettings() {
 
 async function loadQuranData() {
   try {
-    const response = await fetch(
-      'assets/text/UthmanicWarsh/warshData_v2-1.json',
-    );
-    state.quranData = await response.json();
+    const cfg = RIWAYA_CONFIG[state.currentRiwaya];
+    const textFile = cfg
+      ? cfg.textFile
+      : 'assets/text/UthmanicWarsh/warshData_v2-1.json';
+    const response = await fetch(textFile);
+    const raw = await response.json();
+    state.quranData = raw.map((item) => ({
+      ...item,
+      page: String(item.page),
+    }));
   } catch (error) {
     console.error('Error loading Quran data:', error);
     showToast('خطأ في تحميل بيانات القرآن الكريم');
@@ -253,12 +309,7 @@ async function loadQuranData() {
 }
 
 async function loadAudioUrlsData() {
-  const files = [
-    'assets/text/quran_audio_urls-1.json',
-    'assets/text/quran_audio_urls-2.json',
-    'assets/text/quran_audio_urls-3.json',
-    'assets/text/quran_audio_urls-4.json',
-  ];
+  const files = RIWAYA_CONFIG[state.currentRiwaya].audioUrls;
 
   const results = await Promise.allSettled(
     files.map((f) => fetch(f).then((r) => r.json())),
@@ -274,6 +325,120 @@ async function loadAudioUrlsData() {
     console.log(
       `Loaded ${state.audioUrlsSources.length} audio URL source(s) for load balancing.`,
     );
+  }
+}
+
+/** Cycle through available riwayas when the badge is clicked */
+function cycleRiwaya() {
+  const riwayas = Object.keys(RIWAYA_CONFIG);
+  const currentIdx = riwayas.indexOf(state.currentRiwaya);
+  const nextRiwaya = riwayas[(currentIdx + 1) % riwayas.length];
+
+  // Sync the sidebar select then trigger the switch
+  const riwayaSelect = getEl('riwaya-select');
+  if (riwayaSelect) riwayaSelect.value = nextRiwaya;
+  switchRiwaya(nextRiwaya);
+}
+
+/** Apply the Quran text font for the currently-active riwaya */
+function applyRiwayaFont() {
+  const cfg = RIWAYA_CONFIG[state.currentRiwaya];
+  if (!cfg) return;
+  const quranTextEl = getEl('quran-text');
+  if (quranTextEl) quranTextEl.style.fontFamily = `'${cfg.font}', serif`;
+
+  // Update header badge
+  const badge = getEl('riwaya-badge');
+  if (badge) {
+    badge.textContent = state.currentRiwaya === 'hafs' ? 'حفص' : 'ورش';
+  }
+}
+
+/** Populate the reciter <select> with options valid for the current riwaya */
+function populateReciterOptions() {
+  const reciterSelect = getEl('reciter-select');
+  if (!reciterSelect) return;
+
+  reciterSelect.innerHTML = '<option value="">اختر القارئ</option>';
+
+  const cfg = RIWAYA_CONFIG[state.currentRiwaya];
+  if (!cfg) return;
+
+  Object.entries(cfg.reciters).forEach(([value, label]) => {
+    const opt = document.createElement('option');
+    opt.value = value;
+    opt.textContent = label;
+    reciterSelect.appendChild(opt);
+  });
+
+  // Restore saved reciter if it is valid for this riwaya, else pick first
+  const saved = localStorage.getItem('reciter') || '';
+  reciterSelect.value = cfg.reciters[saved]
+    ? saved
+    : Object.keys(cfg.reciters)[0];
+  state.selectedReciter = reciterSelect.value;
+}
+
+/**
+ * Switch riwaya: stop audio, reload text data and audio URLs,
+ * re-render the current page, and update UI.
+ */
+async function switchRiwaya(newRiwaya) {
+  if (newRiwaya === state.currentRiwaya) return;
+
+  // Remember which surah the user was on
+  const preservedSura = state.currentSura || 1;
+
+  stopAudio();
+  state.currentRiwaya = newRiwaya;
+  saveSetting('riwaya', newRiwaya);
+
+  // Clear caches that were built for the previous riwaya
+  state.localAudioCache = {};
+  state.audioUrlsSources = [];
+
+  showToast('تحويل الرواية...');
+
+  await loadQuranData();
+  await loadAudioUrlsData();
+
+  applyRiwayaFont();
+  populateReciterOptions();
+
+  // Re-build selectors with new data — flag suppresses spurious change events
+  state.isSwitchingRiwaya = true;
+  getEl('surah-select').innerHTML = '';
+  populateSurahSelector();
+  populateJuzSelector();
+  populatePageSelector();
+  state.isSwitchingRiwaya = false;
+
+  // Reset state then navigate to the preserved surah
+  state.currentPage = 1;
+  state.currentSura = preservedSura;
+  state.currentJuz = 1;
+  state.currentAyah = null;
+
+  const firstAyah = state.quranData.find(
+    (item) => item.sura_no === preservedSura && item.aya_no === 1,
+  );
+
+  if (firstAyah) {
+    const targetPage = parseInt(firstAyah.page.split('-')[0]);
+    displayPage(targetPage, true);
+    getEl('surah-select').value = preservedSura;
+    saveSetting('currentSura', preservedSura);
+
+    setTimeout(() => {
+      state.currentAyah = firstAyah;
+      populateAyahSelector(preservedSura);
+      getEl('ayah-select').value = 1;
+      updatePageInfo(firstAyah);
+      activateAyahInDOM(preservedSura, 1);
+      updateNavButtonStates();
+    }, 200);
+  } else {
+    displayPage(1, false);
   }
 }
 
@@ -389,7 +554,8 @@ function displayPage(pageNum, keepCurrentSura = false) {
 
         if (
           surahsStartingOnPage.has(ayah.sura_no) &&
-          ayah.sura_no !== SURAH_NO_BASMALA
+          ayah.sura_no !== SURAH_NO_BASMALA &&
+          !(state.currentRiwaya === 'hafs' && ayah.sura_no === 1)
         ) {
           const basmalaDiv = document.createElement('div');
           basmalaDiv.className = 'basmala';
@@ -940,8 +1106,17 @@ function navigateToAyah(ayahData) {
 // ─── Event Listeners ──────────────────────────────────────────────────────────
 
 function initializeEventListeners() {
+  // Riwaya selector
+  const riwayaSelect = getEl('riwaya-select');
+  if (riwayaSelect) {
+    riwayaSelect.addEventListener('change', (e) => {
+      switchRiwaya(e.target.value);
+    });
+  }
+
   // Surah selector
   getEl('surah-select').addEventListener('change', (e) => {
+    if (state.isSwitchingRiwaya) return;
     const suraNo = parseInt(e.target.value);
     state.currentSura = suraNo;
 
@@ -974,6 +1149,7 @@ function initializeEventListeners() {
 
   // Juz selector
   getEl('juz-select').addEventListener('change', (e) => {
+    if (state.isSwitchingRiwaya) return;
     const juzNo = parseInt(e.target.value);
     state.currentJuz = juzNo;
     saveSetting('currentJuz', juzNo);
@@ -989,6 +1165,7 @@ function initializeEventListeners() {
 
   // Page selector
   getEl('page-select').addEventListener('change', (e) => {
+    if (state.isSwitchingRiwaya) return;
     const pageNum = parseInt(e.target.value);
     const wasPlaying = state.isPlaying;
     displayPage(pageNum);

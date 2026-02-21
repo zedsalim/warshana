@@ -4,6 +4,11 @@
 }
 
 @font-face {
+  font-family: 'UthmanicHafs';
+  src: url('../fonts/uthmanic_hafs_v20.ttf') format('truetype');
+}
+
+@font-face {
   font-family: 'Amiri';
   src: url('../fonts/Amiri Quran Regular.ttf') format('truetype');
 }
@@ -66,6 +71,41 @@ body {
   filter: invert(0.3) sepia(1) saturate(5) hue-rotate(-30deg);
 }
 
+/* ── Riwaya Badge ──────────────────────────────────────────────────────────── */
+
+.riwaya-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 4px;
+  padding: 3px 14px;
+  background-color: #8d6e63;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  font-size: 16px;
+  font-family: 'Amiri', Arial, sans-serif;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.riwaya-badge::after {
+  content: '⇅';
+  font-size: 16px;
+  opacity: 0.8;
+}
+
+.riwaya-badge:hover {
+  background-color: #6d4c41;
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.riwaya-badge:active {
+  transform: scale(0.97);
+}
+
 /* ── Menu Button ───────────────────────────────────────────────────────────── */
 
 .menu-btn {
@@ -102,12 +142,13 @@ body {
 }
 
 .form-select {
-  padding: 10px;
+  padding: 8px 10px;
   border: 1px solid #c4b5a0;
   border-radius: 5px;
   background-color: #faf7f0;
   color: #3e2723;
-  font-size: 18px;
+  font-size: 15px;
+  line-height: 1.6;
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -538,6 +579,7 @@ body {
 
   .form-select {
     font-size: 13px;
+    line-height: 1.6;
     padding: 8px;
   }
 

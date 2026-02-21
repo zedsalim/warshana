@@ -5,7 +5,7 @@
 </p>
 <hr/>
 
-A lightweight, offline/online-friendly Mushaf **Warsh** web app (Arabic / RTL) that lets you browse the Qur'an by Surah, Juz', or Page and listen verse-by-verse audio with playback controls.
+A lightweight, offline/online-friendly Mushaf web app (Arabic / RTL) supporting both **Warsh** and **Hafs** riwayas. Browse the Qur'an by Surah, Juz', or Page and listen verse-by-verse audio with full playback controls.
 
 > 🌐 **Live site:** [warshana.pages.dev](https://warshana.pages.dev/)
 > 📦 **Android APK:** [Download from Releases](https://github.com/zedsalim/warshana/releases)
@@ -20,8 +20,9 @@ A lightweight, offline/online-friendly Mushaf **Warsh** web app (Arabic / RTL) t
 
 ## Features
 
+- **Two riwayas:** switch between Warsh (رواية ورش عن نافع) and Hafs (رواية حفص عن عاصم) instantly — click the badge in the header or use the sidebar selector
 - Navigate by Surah, Juz, Page, or Ayah from a sidebar
-- Verse-by-verse audio playback (currently one reciter available)
+- Verse-by-verse audio playback with multiple reciters per riwaya
 - Play modes: ayah, page, surah, or juz
 - Playback speed (0.5×–2×) and repeat controls (including infinite)
 - Adjustable Qur'an text font size
@@ -37,8 +38,6 @@ You can use the app in three ways:
 - **Locally:** clone the repo and serve it yourself (required for offline audio).
 
 ### 1. Get the code
-
-Clone the repo or download it as a ZIP:
 
 ```bash
 git clone https://github.com/zedsalim/warshana
@@ -67,7 +66,7 @@ Then open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Offline Audio Setup
 
-By default the app streams audio from online URLs. To use it **fully offline**, download the audio files and place them locally:
+By default the app streams audio from online URLs. To use it **fully offline**, download the audio files and place them locally under the correct riwaya subfolder:
 
 **1. Download the audio files**
 
@@ -76,23 +75,44 @@ Download the reciter folder(s) from Google Drive:
 
 **2. Place them in the right folder**
 
-Extract / move the downloaded folder(s) into:
+Audio is now organised by riwaya:
 
 ```
 assets/
 └── audio/
-    └── abdelbasset_abdessamad/   ← folder name must match exactly
-        ├── 001/
-        │   ├── 001.mp3
-        │   ├── 002.mp3
-        │   └── ...
-        ├── 002/
-        └── ...
+    ├── warsh/
+    │   └── abdelbasset_abdessamad/   ← Warsh reciter folder
+    │       ├── 001/
+    │       │   ├── 001.mp3
+    │       │   ├── 002.mp3
+    │       │   └── ...
+    │       ├── 002/
+    │       └── ...
+    └── hafs/
+        └── abdelbasset_abdessamad/           ← Hafs reciter folder
+            ├── 001/
+            │   ├── 001.mp3
+            │   └── ...
+            └── ...
 ```
+
+> ⚠️ Folder names must match the reciter keys defined in `RIWAYA_CONFIG` inside `script.js` exactly.
 
 **3. Run the local server and enjoy offline**
 
-The app automatically detects whether local audio files are present (via a single check per surah) and uses them. If they're missing it falls back to streaming online. No configuration needed.
+The app automatically detects whether local audio files are present (via a single HEAD request per surah) and uses them. If they're missing it falls back to streaming online. No configuration needed.
+
+## Text Data
+
+Qur'an text is stored in `assets/text/` separated by riwaya:
+
+```
+assets/text/
+├── UthmanicWarsh/
+│   └── warshData_v2-1.json      ← Warsh text (King Fahd v2.1)
+└── UthmanicHafs/
+    └── hafsData_v2-0.json       ← Hafs text (King Fahd v2.0)
+```
 
 ## Keyboard Shortcuts
 
@@ -106,9 +126,10 @@ The app automatically detects whether local audio files are present (via a singl
 
 ## Credits
 
-- **Qur'an text (Warsh):** [King Fahd Glorious Qur'an Printing Complex](https://qurancomplex.gov.sa/quran-dev/)
+- **Qur'an text & fonts:** [King Fahd Glorious Qur'an Printing Complex](https://qurancomplex.gov.sa/quran-dev/)
+  - Warsh font: `uthmanic_warsh_v21.ttf` (Maghribi-style Uthmanic Warsh script)
+  - Hafs font: `uthmanic_hafs_v20.ttf` (KFGQPC Hafs Uthmanic script)
 - **Audio:** [VerseByVerseQuran.com](https://www.versebyversequran.com/)
-- **Font:** Maghribi-style Uthmanic Warsh script (`uthmanic_warsh_v21.ttf`) By [King Fahd Glorious Qur'an Printing Complex](https://qurancomplex.gov.sa/quran-dev/)
 - **UI framework:** Bootstrap 5 RTL
 
 ## Audio Verification
