@@ -720,7 +720,7 @@ function highlightActiveAyah() {
  * Jump to the first ayah of a page and start playback from there.
  * Used when navigating pages while audio is active.
  */
-function jumpToFirstAyahOfPage(pageNum) {
+function jumpToFirstAyahOfPage(pageNum, shouldPlay = false) {
   const pageData = getAyahsOnPage(pageNum);
   if (pageData.length === 0) return;
 
@@ -755,7 +755,7 @@ function jumpToFirstAyahOfPage(pageNum) {
 
   setTimeout(() => {
     activateAyahInDOM(firstAyah.sura_no, firstAyah.aya_no);
-    if (getEl('reciter-select').value) playAudio();
+    if (shouldPlay && getEl('reciter-select').value) playAudio();
   }, 100);
 }
 
@@ -921,12 +921,15 @@ function initializeEventListeners() {
     saveSetting('currentSura', suraNo);
     saveSetting('currentAyah', firstAyah.aya_no);
 
+    const wasPlaying = state.isPlaying;
+    if (wasPlaying) stopAudio();
+
     setTimeout(() => {
       activateAyahInDOM(suraNo, 1);
       getEl('ayah-select').value = 1;
       updatePageInfo(firstAyah);
 
-      if (getEl('reciter-select').value) playAudio();
+      if (wasPlaying && getEl('reciter-select').value) playAudio();
     }, 100);
   });
 
@@ -939,16 +942,18 @@ function initializeEventListeners() {
     const firstAyah = state.quranData.find((item) => item.jozz === juzNo);
     if (firstAyah) {
       const pageNum = parseInt(firstAyah.page.split('-')[0]);
+      const wasPlaying = state.isPlaying;
       displayPage(pageNum);
-      jumpToFirstAyahOfPage(pageNum);
+      jumpToFirstAyahOfPage(pageNum, wasPlaying);
     }
   });
 
   // Page selector
   getEl('page-select').addEventListener('change', (e) => {
     const pageNum = parseInt(e.target.value);
+    const wasPlaying = state.isPlaying;
     displayPage(pageNum);
-    jumpToFirstAyahOfPage(pageNum);
+    jumpToFirstAyahOfPage(pageNum, wasPlaying);
   });
 
   // Ayah selector
@@ -962,12 +967,23 @@ function initializeEventListeners() {
 
     if (!ayahData) return;
 
+    const wasPlaying = state.isPlaying;
     const ayahPage = parseInt(ayahData.page.split('-')[0]);
     if (ayahPage !== state.currentPage) {
       displayPage(ayahPage, true);
-      setTimeout(() => selectAndPlayAyah(ayahData), 200);
+      setTimeout(() => {
+        if (wasPlaying) {
+          selectAndPlayAyah(ayahData);
+        } else {
+          setCurrentAyah(ayahData);
+        }
+      }, 200);
     } else {
-      selectAndPlayAyah(ayahData);
+      if (wasPlaying) {
+        selectAndPlayAyah(ayahData);
+      } else {
+        setCurrentAyah(ayahData);
+      }
     }
   });
 
@@ -1006,26 +1022,18 @@ function initializeEventListeners() {
   getEl('prev-page').addEventListener('click', () => {
     if (state.currentPage > 1) {
       const newPage = state.currentPage - 1;
+      const wasPlaying = state.isPlaying;
       displayPage(newPage);
-      if (
-        state.isPlaying ||
-        (state.audioPlayer?.src && state.audioPlayer.src !== '')
-      ) {
-        jumpToFirstAyahOfPage(newPage);
-      }
+      jumpToFirstAyahOfPage(newPage, wasPlaying);
     }
   });
 
   getEl('next-page').addEventListener('click', () => {
     if (state.currentPage < TOTAL_PAGES) {
       const newPage = state.currentPage + 1;
+      const wasPlaying = state.isPlaying;
       displayPage(newPage);
-      if (
-        state.isPlaying ||
-        (state.audioPlayer?.src && state.audioPlayer.src !== '')
-      ) {
-        jumpToFirstAyahOfPage(newPage);
-      }
+      jumpToFirstAyahOfPage(newPage, wasPlaying);
     }
   });
 
