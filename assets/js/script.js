@@ -178,6 +178,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         getEl('ayah-select').value = 1;
         updatePageInfo(firstAyah);
         activateAyahInDOM(firstAyah.sura_no, 1);
+        updateNavButtonStates();
       }
     }, 200);
   }
@@ -199,6 +200,7 @@ function restoreSavedAyah(suraNo, ayahNo) {
   getEl('ayah-select').value = ayahNo;
   updatePageInfo(ayahData);
   activateAyahInDOM(suraNo, ayahNo);
+  updateNavButtonStates();
 }
 
 /** Load persisted user settings from localStorage */
@@ -432,6 +434,7 @@ function setCurrentAyah(ayahData, { play = false } = {}) {
   saveSetting('currentAyah', ayahData.aya_no);
 
   activateAyahInDOM(ayahData.sura_no, ayahData.aya_no);
+  updateNavButtonStates();
 
   if (play) playAudio();
 }
@@ -1144,6 +1147,50 @@ function syncBottomPlayIcon() {
   const icon = getEl('bottom-play-icon');
   if (!icon) return;
   icon.className = state.isPlaying ? 'bi bi-pause-fill' : 'bi bi-play-fill';
+}
+
+/** Update disabled state of bottom nav buttons based on current ayah position */
+function updateNavButtonStates() {
+  const btns = document.querySelectorAll('.bottom-controls .ctrl-btn');
+  // We select by onclick attribute for reliability
+  const prevSurahBtn = document.querySelector(
+    '.ctrl-btn[onclick="bottomNavPrevSurah()"]',
+  );
+  const prevAyahBtn = document.querySelector(
+    '.ctrl-btn[onclick="bottomNavPrev()"]',
+  );
+  const nextAyahBtn = document.querySelector(
+    '.ctrl-btn[onclick="bottomNavNext()"]',
+  );
+  const nextSurahBtn = document.querySelector(
+    '.ctrl-btn[onclick="bottomNavNextSurah()"]',
+  );
+
+  if (!state.currentAyah) {
+    if (prevSurahBtn) prevSurahBtn.disabled = true;
+    if (prevAyahBtn) prevAyahBtn.disabled = true;
+    if (nextAyahBtn) nextAyahBtn.disabled = true;
+    if (nextSurahBtn) nextSurahBtn.disabled = true;
+    return;
+  }
+
+  const sura = state.currentAyah.sura_no;
+  const aya = state.currentAyah.aya_no;
+
+  const hasPrevAyah = !!state.quranData.find(
+    (i) => i.sura_no === sura && i.aya_no === aya - 1,
+  );
+  const hasPrevSurah = sura > 1;
+
+  const hasNextAyah =
+    !!state.quranData.find((i) => i.sura_no === sura && i.aya_no === aya + 1) ||
+    sura < 114;
+  const hasNextSurah = sura < 114;
+
+  if (prevAyahBtn) prevAyahBtn.disabled = !hasPrevAyah && !hasPrevSurah;
+  if (prevSurahBtn) prevSurahBtn.disabled = !hasPrevSurah;
+  if (nextAyahBtn) nextAyahBtn.disabled = !hasNextAyah;
+  if (nextSurahBtn) nextSurahBtn.disabled = !hasNextSurah;
 }
 
 /** Bottom bar play/pause button handler */

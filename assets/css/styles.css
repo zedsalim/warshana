@@ -350,6 +350,12 @@ body {
   transform: scale(0.95);
 }
 
+.ctrl-btn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .ctrl-btn--primary {
   width: 42px;
   height: 42px;
