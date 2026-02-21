@@ -5,7 +5,7 @@ const SURAH_NO_BASMALA = 9; // Surah At-Tawbah has no Basmala
 // ─── State ────────────────────────────────────────────────────────────────────
 const state = {
   quranData: [],
-  audioUrlsData: null,
+  audioUrlsSources: [],
   localAudioCache: {},
   useLocalAudio: true,
   currentPage: 1,
@@ -82,19 +82,34 @@ function buildAudioPath(reciter, suraNo, ayahNo) {
   return `assets/audio/${reciter}/${String(suraNo).padStart(3, '0')}/${String(ayahNo).padStart(3, '0')}.mp3`;
 }
 
-/** Look up a fallback online URL from the loaded JSON for a given reciter/sura/ayah */
+/**
+ * Look up a fallback online URL from the loaded JSON sources for a given reciter/sura/ayah.
+ * Randomly selects from available sources each call to distribute bandwidth
+ * across all hosted accounts and avoid hitting any single Cloudinary quota.
+ */
 function getFallbackAudioUrl(reciter, suraNo, ayahNo) {
-  if (!state.audioUrlsData) return null;
-  const reciters = state.audioUrlsData.reciters;
-  if (!reciters) return null;
-  const reciterData = reciters[reciter];
-  if (!reciterData) return null;
+  const sources = state.audioUrlsSources;
+  if (!sources || sources.length === 0) return null;
+
   const suraKey = String(suraNo).padStart(3, '0');
   const ayahKey = String(ayahNo).padStart(3, '0');
-  const ayahs = reciterData[suraKey];
-  if (!ayahs) return null;
-  const found = ayahs.find((a) => a.ayah === ayahKey);
-  return found ? found.url : null;
+
+  // Shuffle source indices so load is distributed randomly across accounts
+  const order = [...sources.keys()].sort(() => Math.random() - 0.5);
+
+  for (const idx of order) {
+    const source = sources[idx];
+    const reciters = source?.reciters;
+    if (!reciters) continue;
+    const reciterData = reciters[reciter];
+    if (!reciterData) continue;
+    const ayahs = reciterData[suraKey];
+    if (!ayahs) continue;
+    const found = ayahs.find((a) => a.ayah === ayahKey);
+    if (found?.url) return found.url;
+  }
+
+  return null;
 }
 
 /**
@@ -238,11 +253,27 @@ async function loadQuranData() {
 }
 
 async function loadAudioUrlsData() {
-  try {
-    const response = await fetch('assets/text/quran_audio_urls.json');
-    state.audioUrlsData = await response.json();
-  } catch (error) {
-    console.warn('Could not load audio URLs fallback data:', error);
+  const files = [
+    'assets/text/quran_audio_urls-1.json',
+    'assets/text/quran_audio_urls-2.json',
+    'assets/text/quran_audio_urls-3.json',
+    'assets/text/quran_audio_urls-4.json',
+  ];
+
+  const results = await Promise.allSettled(
+    files.map((f) => fetch(f).then((r) => r.json())),
+  );
+
+  state.audioUrlsSources = results
+    .filter((r) => r.status === 'fulfilled')
+    .map((r) => r.value);
+
+  if (state.audioUrlsSources.length === 0) {
+    console.warn('Could not load any audio URLs fallback data.');
+  } else {
+    console.log(
+      `Loaded ${state.audioUrlsSources.length} audio URL source(s) for load balancing.`,
+    );
   }
 }
 
