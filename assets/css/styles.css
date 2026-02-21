@@ -570,6 +570,50 @@ body {
   }
 }
 
+/* ── Floating Menu Button (FAB) ────────────────────────────────────────────── */
+
+.fab-menu-btn {
+  position: fixed;
+  bottom: 70px;
+  left: 18px;
+  z-index: 1050;
+  background-color: var(--c-brown);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 26px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3);
+  transition: all 0.25s ease;
+}
+
+.fab-menu-btn:hover {
+  background-color: var(--c-brown-dk);
+  transform: scale(1.12);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+  animation: none;
+}
+
+.fab-menu-btn:active {
+  transform: scale(0.95);
+  animation: none;
+}
+
+@media (max-width: 767px) {
+  .fab-menu-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 22px;
+    bottom: 62px;
+    left: 12px;
+  }
+}
+
 /* ── Print ─────────────────────────────────────────────────────────────────── */
 
 @media print {
@@ -577,6 +621,7 @@ body {
   .header,
   .nav-btn,
   .menu-btn,
+  .fab-menu-btn,
   .bottom-controls {
     display: none !important;
   }
