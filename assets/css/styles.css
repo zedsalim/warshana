@@ -206,6 +206,13 @@ body {
   transform: scale(1);
 }
 
+.nav-btn--surah {
+  width: 36px;
+  height: 36px;
+  font-size: 16px;
+  background-color: #a1887f;
+}
+
 .page-info-wrapper {
   min-width: 200px;
   max-width: 500px;

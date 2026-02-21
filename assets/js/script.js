@@ -1196,6 +1196,24 @@ function bottomNavPrev() {
   }
 }
 
+/** Bottom bar — navigate to first ayah of previous surah */
+function bottomNavPrevSurah() {
+  if (!state.currentAyah || state.currentAyah.sura_no <= 1) return;
+  const firstAyah = state.quranData.find(
+    (i) => i.sura_no === state.currentAyah.sura_no - 1 && i.aya_no === 1,
+  );
+  if (firstAyah) navigateToAyah(firstAyah);
+}
+
+/** Bottom bar — navigate to first ayah of next surah */
+function bottomNavNextSurah() {
+  if (!state.currentAyah || state.currentAyah.sura_no >= 114) return;
+  const firstAyah = state.quranData.find(
+    (i) => i.sura_no === state.currentAyah.sura_no + 1 && i.aya_no === 1,
+  );
+  if (firstAyah) navigateToAyah(firstAyah);
+}
+
 /** Wire up bottom bar sync listeners — called once after DOM + settings are ready */
 function initializeBottomControls() {
   syncBottomSpeedLabel();
