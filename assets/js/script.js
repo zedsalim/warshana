@@ -368,10 +368,6 @@ function displayPage(pageNum, keepCurrentSura = false) {
       }
     }
 
-    if (index > 0 && ayah.line_start > pageData[index - 1].line_end) {
-      quranTextDiv.appendChild(document.createElement('br'));
-    }
-
     const ayahSpan = document.createElement('span');
     ayahSpan.className = 'ayah';
     ayahSpan.dataset.sura = ayah.sura_no;
