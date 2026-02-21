@@ -803,8 +803,13 @@ function togglePauseResume() {
 function updatePauseButton() {
   const pauseBtn = getEl('pause-btn');
   const isPaused = state.audioPlayer?.paused ?? true;
-  const text = isPaused || !state.isPlaying ? '▶ استئناف' : '⏸ إيقاف مؤقت';
-  if (pauseBtn) pauseBtn.textContent = text;
+
+  const html =
+    isPaused || !state.isPlaying
+      ? '<i class="bi bi-play-fill"></i> استئناف'
+      : '<i class="bi bi-pause-fill"></i> إيقاف مؤقت';
+
+  if (pauseBtn) pauseBtn.innerHTML = html;
 }
 
 /** Switch the reciter while audio is actively playing */
