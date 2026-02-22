@@ -1497,3 +1497,9 @@ function initializeBottomControls() {
   const speedSel = getEl('speed-control');
   if (speedSel) speedSel.addEventListener('change', syncBottomSpeedLabel);
 }
+
+// ─── Utilities ──────────────────────────────────────────────────────
+/** Fullscreen Toggle */
+function toggleFullscreen() {
+  document.body.classList.toggle('fullscreen-mode');
+}

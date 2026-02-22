@@ -218,6 +218,13 @@ body {
   border-bottom: 2px solid var(--c-border);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   flex-shrink: 0;
+  overflow: hidden;
+  max-height: 200px;
+  opacity: 1;
+  transition:
+    max-height 0.4s ease,
+    opacity 0.3s ease,
+    padding 0.35s ease;
 }
 
 #sura-title {
@@ -255,6 +262,7 @@ body {
   overscroll-behavior: contain;
   padding: 30px 15px 66px;
   background: linear-gradient(to bottom, var(--c-bg), #ede3cf);
+  transition: padding-top 0.4s ease;
 }
 
 /* ── Quran text block ──────────────────────────────────────────────────────── */
@@ -575,15 +583,15 @@ body {
 .fab-menu-btn {
   position: fixed;
   bottom: 70px;
-  left: 18px;
+  left: 17px;
   z-index: 1050;
   background-color: var(--c-brown);
   color: #fff;
   border: none;
   border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  font-size: 26px;
+  width: 38px;
+  height: 38px;
+  font-size: 18px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -606,12 +614,92 @@ body {
 
 @media (max-width: 767px) {
   .fab-menu-btn {
-    width: 44px;
-    height: 44px;
-    font-size: 22px;
+    width: 38px;
+    height: 38px;
+    font-size: 18px;
     bottom: 62px;
-    left: 12px;
+    left: 11px;
   }
+}
+
+/* ── Fullscreen mode ───────────────────────────────────────────────────────── */
+
+body.fullscreen-mode .header {
+  max-height: 0 !important;
+  opacity: 0;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  pointer-events: none;
+}
+
+body.fullscreen-mode .quran-text-container {
+  padding-top: 10px;
+}
+
+/* FAB fullscreen buttons base */
+.fab-fullscreen-btn {
+  position: fixed;
+  bottom: 120px;
+  left: 17px;
+  z-index: 1050;
+  background-color: var(--c-brown);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease,
+    background-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.fab-fullscreen-btn:hover {
+  background-color: var(--c-brown-dk);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+}
+
+.fab-fullscreen-btn:active {
+  transform: scale(0.95);
+}
+
+@media (max-width: 767px) {
+  .fab-fullscreen-btn {
+    width: 38px;
+    height: 38px;
+    font-size: 18px;
+    bottom: 112px;
+    left: 11px;
+  }
+}
+
+.fab-fullscreen-enter {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+body.fullscreen-mode .fab-fullscreen-enter {
+  opacity: 0;
+  transform: scale(0.5);
+  pointer-events: none;
+}
+
+.fab-fullscreen-exit {
+  opacity: 0;
+  transform: scale(0.5);
+  pointer-events: none;
+}
+body.fullscreen-mode .fab-fullscreen-exit {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
 }
 
 /* ── Print ─────────────────────────────────────────────────────────────────── */
