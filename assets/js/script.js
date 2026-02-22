@@ -407,7 +407,6 @@ async function switchRiwaya(newRiwaya) {
 
   // Re-build selectors with new data — flag suppresses spurious change events
   state.isSwitchingRiwaya = true;
-  getEl('surah-select').innerHTML = '';
   populateSurahSelector();
   populateJuzSelector();
   populatePageSelector();
@@ -452,6 +451,7 @@ function initializeSelectors() {
 
 function populateSurahSelector() {
   const surahSelect = getEl('surah-select');
+  surahSelect.innerHTML = '';
   const surahs = [
     ...new Map(state.quranData.map((item) => [item.sura_no, item])).values(),
   ];
@@ -470,6 +470,7 @@ function populateSurahSelector() {
 
 function populateJuzSelector() {
   const juzSelect = getEl('juz-select');
+  juzSelect.innerHTML = '';
 
   for (let i = 1; i <= 30; i++) {
     const option = document.createElement('option');
@@ -484,6 +485,7 @@ function populateJuzSelector() {
 
 function populatePageSelector() {
   const pageSelect = getEl('page-select');
+  pageSelect.innerHTML = '';
 
   for (let i = 1; i <= TOTAL_PAGES; i++) {
     const option = document.createElement('option');
