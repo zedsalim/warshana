@@ -1,6 +1,8 @@
 // ─── Constants ────────────────────────────────────────────────────────────────
 const TOTAL_PAGES = 604;
 const SURAH_NO_BASMALA = 9; // Surah At-Tawbah has no Basmala
+const WARSH_MODAL_KEY = 'warshModalSeen';
+const WARSH_TIMER_MS = 5000;
 
 /**
  * Riwaya configuration.
@@ -286,6 +288,7 @@ function loadSettings() {
   const savedFontSize = localStorage.getItem('fontSize') || '28';
   getEl('font-size-control').value = savedFontSize;
   applyFontSize(savedFontSize);
+  showWarshModal();
 }
 
 // ─── Data Loading ─────────────────────────────────────────────────────────────
@@ -438,6 +441,10 @@ async function switchRiwaya(newRiwaya) {
     }, 200);
   } else {
     displayPage(1, false);
+  }
+
+  if (newRiwaya === 'warsh') {
+    showWarshModal();
   }
 }
 
@@ -1502,4 +1509,93 @@ function initializeBottomControls() {
 /** Fullscreen Toggle */
 function toggleFullscreen() {
   document.body.classList.toggle('fullscreen-mode');
+}
+
+/**
+ * Starts the countdown timer and progress bar inside the modal.
+ * Enables the close button when the timer reaches zero.
+ */
+function startWarshModalTimer() {
+  const bar = document.getElementById('warshProgressBar');
+  const countdown = document.getElementById('warshCountdown');
+  const closeBtn = document.getElementById('warshCloseBtn');
+  const label = document.getElementById('warshTimerLabel');
+
+  if (!bar || !closeBtn) return;
+
+  let remaining = WARSH_TIMER_MS / 1000;
+
+  // Shrink the bar over exactly WARSH_TIMER_MS milliseconds
+  requestAnimationFrame(() => {
+    bar.style.width = '100%';
+    requestAnimationFrame(() => {
+      bar.style.transition = `width ${WARSH_TIMER_MS}ms linear`;
+      bar.style.width = '0%';
+    });
+  });
+
+  // Decrement the countdown every second
+  const tick = setInterval(() => {
+    remaining--;
+    if (countdown) countdown.textContent = Math.max(remaining, 0);
+    if (remaining <= 0) {
+      clearInterval(tick);
+      closeBtn.classList.remove('disabled');
+      closeBtn.removeAttribute('disabled');
+      if (label) label.textContent = '';
+    }
+  }, 1000);
+}
+
+/**
+ * Shows Warsh Maghribi Text Style Modal
+ */
+function showWarshModal() {
+  if (localStorage.getItem(WARSH_MODAL_KEY) === '1') return;
+  if (state.currentRiwaya !== 'warsh') return;
+
+  const modalEl = document.getElementById('warshInfoModal');
+  if (!modalEl) return;
+
+  const modal = bootstrap.Modal.getOrCreateInstance(modalEl, {
+    backdrop: 'static',
+    keyboard: false,
+  });
+
+  // Reset the progress bar and button state before showing
+  const bar = document.getElementById('warshProgressBar');
+  const btn = document.getElementById('warshCloseBtn');
+  const lbl = document.getElementById('warshTimerLabel');
+  const cnt = document.getElementById('warshCountdown');
+  if (bar) {
+    bar.style.transition = 'none';
+    bar.style.width = '100%';
+  }
+  if (btn) {
+    btn.classList.add('disabled');
+  }
+  // Persist seen state to localStorage when the modal is closed
+  modalEl.addEventListener(
+    'hidden.bs.modal',
+    () => {
+      localStorage.setItem(WARSH_MODAL_KEY, '1');
+    },
+    { once: true },
+  );
+
+  modal.show();
+
+  // Start the timer once the modal is fully visible
+  modalEl.addEventListener(
+    'shown.bs.modal',
+    () => {
+      // Re-enable the CSS transition that was removed before showing
+      const b = document.getElementById('warshProgressBar');
+      if (b) {
+        b.style.transition = '';
+      }
+      startWarshModalTimer();
+    },
+    { once: true },
+  );
 }
