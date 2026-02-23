@@ -5,6 +5,10 @@
 </p>
 <hr/>
 
+**English** | [العربية](./README.ar.md)
+
+---
+
 A lightweight, offline/online-friendly Mushaf web app (Arabic / RTL) supporting both **Warsh** and **Hafs** riwayas. Browse the Qur'an by Surah, Juz', or Page and listen verse-by-verse audio with full playback controls.
 
 > 🌐 **Live site:** [sarayan.pages.dev](https://sarayan.pages.dev/)
