@@ -487,7 +487,7 @@ body {
   }
 
   .quran-text-container {
-    padding: 15px 10px 30px;
+    padding: 15px 15px 30px;
   }
   .quran-text {
     font-size: 20px;
@@ -614,10 +614,10 @@ body {
 
 @media (max-width: 767px) {
   .fab-menu-btn {
-    width: 38px;
-    height: 38px;
-    font-size: 18px;
-    bottom: 62px;
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    bottom: 60px;
     left: 11px;
   }
 }
@@ -668,10 +668,10 @@ body.fullscreen-mode .quran-text-container {
 
 @media (max-width: 767px) {
   .fab-fullscreen-btn {
-    width: 38px;
-    height: 38px;
-    font-size: 18px;
-    bottom: 112px;
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    bottom: 104px;
     left: 11px;
   }
 }
@@ -860,7 +860,10 @@ body.fullscreen-mode .fab-fullscreen-exit {
 
 @media (max-width: 767px) {
   .fab-about-btn {
-    bottom: 162px;
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    bottom: 150px;
     left: 11px;
   }
 }
