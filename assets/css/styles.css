@@ -147,7 +147,9 @@ body {
 
 .menu-btn:hover {
   background-color: var(--c-brown-dk);
-  transform: scale(1.05);
+}
+.menu-btn:active {
+  transform: scale(0.95);
 }
 
 /* ── Nav buttons ───────────────────────────────────────────────────────────── */
@@ -170,7 +172,6 @@ body {
 
 .nav-btn:hover {
   background-color: var(--c-brown-dk);
-  transform: scale(1.1);
 }
 .nav-btn:disabled {
   background-color: var(--c-border);
@@ -602,7 +603,6 @@ body {
 
 .fab-menu-btn:hover {
   background-color: var(--c-brown-dk);
-  transform: scale(1.12);
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
   animation: none;
 }
@@ -654,11 +654,7 @@ body.fullscreen-mode .quran-text-container {
   align-items: center;
   justify-content: center;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3);
-  transition:
-    opacity 0.3s ease,
-    transform 0.3s ease,
-    background-color 0.25s ease,
-    box-shadow 0.25s ease;
+  transition: all 0.25s ease;
 }
 
 .fab-fullscreen-btn:hover {
@@ -832,6 +828,83 @@ body.fullscreen-mode .fab-fullscreen-exit {
   }
 }
 
+/* ── About FAB ─────────────────────────────────────────────────────────────── */
+.fab-about-btn {
+  position: fixed;
+  bottom: 170px;
+  left: 17px;
+  z-index: 1050;
+  background-color: var(--c-brown);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3);
+  transition: all 0.25s ease;
+}
+
+.fab-about-btn:hover {
+  background-color: var(--c-brown-dk);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+}
+
+.fab-about-btn:active {
+  transform: scale(0.95);
+}
+
+@media (max-width: 767px) {
+  .fab-about-btn {
+    bottom: 162px;
+    left: 11px;
+  }
+}
+
+/* ── About Modal ────────────────────────────────────────────────────────────── */
+.about-modal-content {
+  background-color: var(--c-bg);
+  border: 1px solid var(--c-border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.about-modal-header {
+  background: linear-gradient(
+    135deg,
+    var(--c-brown) 0%,
+    var(--c-brown-dk) 100%
+  );
+}
+
+.about-card {
+  background-color: var(--c-surface);
+  border-color: var(--c-border) !important;
+}
+
+.about-card-title {
+  color: var(--c-brown);
+  font-size: 1rem;
+}
+
+.about-text {
+  color: var(--c-text);
+}
+
+.about-link {
+  color: var(--c-brown);
+  transition: color 0.2s ease;
+}
+
+.about-link:hover {
+  color: var(--c-brown-dk);
+  text-decoration: underline !important;
+}
+
 /* ── Print ─────────────────────────────────────────────────────────────────── */
 
 @media print {
@@ -840,6 +913,7 @@ body.fullscreen-mode .fab-fullscreen-exit {
   .nav-btn,
   .menu-btn,
   .fab-menu-btn,
+  .fab-about-btn,
   .bottom-controls {
     display: none !important;
   }

@@ -426,6 +426,133 @@
       </div>
     </div>
 
+    <!-- About Modal -->
+    <div
+      class="modal fade"
+      id="aboutModal"
+      tabindex="-1"
+      aria-labelledby="aboutModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content about-modal-content">
+          <div class="modal-header about-modal-header border-0 py-3 px-4">
+            <h5
+              class="modal-title fw-bold text-white fs-5"
+              id="aboutModalLabel"
+            >
+              عن سَرَيان
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+              style="filter: invert(1)"
+            ></button>
+          </div>
+
+          <div class="modal-body p-4 d-flex flex-column gap-3">
+            <div class="about-card rounded-3 border p-3">
+              <p class="about-text fs-5 lh-lg mb-0">
+                سَرَيان تطبيق ويب مفتوح المصدر لقراءة القرآن الكريم والاستماع
+                إليه لتسهيل الحفظ والمراجعة بروايتي
+                <strong>ورش عن نافع</strong> و<strong>حفص عن عاصم</strong>.
+              </p>
+            </div>
+
+            <div class="about-card rounded-3 border p-3">
+              <h6
+                class="about-card-title fw-bold mb-2 d-flex align-items-center gap-2"
+              >
+                <i class="bi bi-github"></i> الكود
+              </h6>
+              <p class="about-text fs-5 lh-lg mb-0">
+                الكود المصدري متاح على GitHub:
+              </p>
+              <a
+                href="https://github.com/zedsalim/sarayan"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="about-link fw-bold text-decoration-none d-inline-block mt-1"
+              >
+                github.com/zedsalim/sarayan
+              </a>
+            </div>
+
+            <div class="about-card rounded-3 border p-3">
+              <h6
+                class="about-card-title fw-bold mb-2 d-flex align-items-center gap-2"
+              >
+                <i class="bi bi-download"></i> استخدام التطبيق
+              </h6>
+              <ul
+                class="about-text fs-5 lh-lg mb-0 ps-0"
+                style="list-style: none"
+              >
+                <li class="mb-1">
+                  <strong>أونلاين:</strong>
+                  <a
+                    href="https://sarayan.pages.dev/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="about-link text-decoration-none"
+                    >sarayan.pages.dev</a
+                  >
+                </li>
+                <li class="mb-1">
+                  <strong>أندرويد:</strong>
+                  <a
+                    href="https://github.com/zedsalim/sarayan/releases"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="about-link text-decoration-none"
+                    >تحميل APK</a
+                  >
+                </li>
+                <li>
+                  <strong>محلياً:</strong> انسخ المشروع وشغّل خادم HTTP محلي
+                </li>
+              </ul>
+            </div>
+
+            <div class="about-card rounded-3 border p-3">
+              <h6
+                class="about-card-title fw-bold mb-2 d-flex align-items-center gap-2"
+              >
+                <i class="bi bi-heart-fill"></i> المصادر
+              </h6>
+              <ul
+                class="about-text fs-5 lh-lg mb-0 ps-0"
+                style="list-style: none"
+              >
+                <li class="mb-1">
+                  النص والخطوط:
+                  <a
+                    href="https://qurancomplex.gov.sa/quran-dev/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="about-link text-decoration-none"
+                    >مجمع الملك فهد</a
+                  >
+                </li>
+                <li>
+                  القراء:
+                  <a
+                    href="https://www.versebyversequran.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="about-link text-decoration-none"
+                    >VerseByVerseQuran.com</a
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Floating Menu Button -->
     <button
       class="fab-menu-btn"
@@ -454,6 +581,16 @@
       title="إنهاء ملء الشاشة"
     >
       <i class="bi bi-fullscreen-exit"></i>
+    </button>
+
+    <!-- Floating About Button -->
+    <button
+      class="fab-about-btn"
+      data-bs-toggle="modal"
+      data-bs-target="#aboutModal"
+      title="عن التطبيق"
+    >
+      <i class="bi bi-question-lg"></i>
     </button>
 
     <!-- Bootstrap JS Bundle -->
