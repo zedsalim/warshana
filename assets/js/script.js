@@ -970,6 +970,37 @@ function jumpToFirstAyahOfPage(pageNum, shouldPlay = false) {
   }, 100);
 }
 
+/**
+ * Returns true if the player has an active src (playing OR paused mid-playback).
+ * Used to detect "paused but was playing" state during navigation.
+ */
+function hasActiveAudioSrc() {
+  return !!(
+    state.audioPlayer?.src &&
+    state.audioPlayer.src !== '' &&
+    state.audioPlayer.src !== window.location.href
+  );
+}
+
+/**
+ * Clear the audio player src and reset playback state without affecting
+ * state.currentAyah. Called when navigating to a new ayah while paused,
+ * so the next play press starts the NEW ayah instead of resuming the old one.
+ */
+function clearAudioForNavigation() {
+  if (state.audioPlayer) {
+    state.audioPlayer.pause();
+    state.audioPlayer.src = '';
+  }
+  state.isPlaying = false;
+  state.playQueue = [];
+  state.currentPlayIndex = 0;
+  state.currentRepeatCount = 0;
+  state.currentPlayModeRepeatCount = 0;
+  updatePauseButton();
+  syncBottomPlayIcon();
+}
+
 function stopAudio() {
   if (state.audioPlayer) {
     state.audioPlayer.pause();
@@ -1093,8 +1124,10 @@ function changeSpeed(direction) {
 function navigateToAyah(ayahData) {
   const targetPage = parseInt(ayahData.page.split('-')[0]);
   const wasPlaying = state.isPlaying;
+  const wasPaused = !wasPlaying && hasActiveAudioSrc();
 
   if (wasPlaying) stopAudio();
+  else if (wasPaused) clearAudioForNavigation();
 
   if (targetPage !== state.currentPage) {
     displayPage(targetPage, true);
@@ -1147,7 +1180,9 @@ function initializeEventListeners() {
     saveSetting('currentAyah', firstAyah.aya_no);
 
     const wasPlaying = state.isPlaying;
+    const wasPaused = !wasPlaying && hasActiveAudioSrc();
     if (wasPlaying) stopAudio();
+    else if (wasPaused) clearAudioForNavigation();
 
     setTimeout(() => {
       activateAyahInDOM(suraNo, 1);
@@ -1196,6 +1231,7 @@ function initializeEventListeners() {
     if (!ayahData) return;
 
     const wasPlaying = state.isPlaying;
+    const wasPaused = !wasPlaying && hasActiveAudioSrc();
     const ayahPage = parseInt(ayahData.page.split('-')[0]);
     if (ayahPage !== state.currentPage) {
       displayPage(ayahPage, true);
@@ -1203,6 +1239,7 @@ function initializeEventListeners() {
         if (wasPlaying) {
           selectAndPlayAyah(ayahData);
         } else {
+          if (wasPaused) clearAudioForNavigation();
           setCurrentAyah(ayahData);
         }
       }, 200);
@@ -1210,6 +1247,7 @@ function initializeEventListeners() {
       if (wasPlaying) {
         selectAndPlayAyah(ayahData);
       } else {
+        if (wasPaused) clearAudioForNavigation();
         setCurrentAyah(ayahData);
       }
     }
