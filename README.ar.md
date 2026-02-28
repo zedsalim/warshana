@@ -35,7 +35,6 @@
 - التحكم في سرعة التشغيل (0.5×–2×) وتكرار التلاوة (بما في ذلك التكرار اللانهائي)
 - ضبط حجم خط نص القرآن الكريم
 - تمييز الآية النشطة مع التمرير التلقائي
-- علامات نهاية الآيات (ﰀ ﰁ ﰂ …) مُصوَّرة عبر حروف KFGQPC الخاصة
 - تبديل وضع القراءة بملء الشاشة
 - حفظ الإعدادات عبر `localStorage` بين الجلسات
 
@@ -140,9 +139,9 @@ assets/text/
 }
 ```
 
-حقل `aya_no_marker` يحتوي على حرف KFGQPC الخاص (`U+FC00 + aya_no - 1`) الذي تُصوِّره خطوط عثمان كزخرفة نهاية الآية.
+حقل `aya_no_marker` يحتوي على حرف KFGQPC الخاص (`U+FC00 + aya_no - 1`) المستخدم في رواية حفص. أما في رواية ورش، فيتجاهل التطبيق هذا الحقل ويعرض الأرقام العربية الهندية مباشرةً (مثل `٣`) — وهي متوافقة مع خط `warsh-v8-full` وأي خط عربي قياسي.
 
-> مصدر نص ورش: [fawazahmed0/quran-api](https://github.com/fawazahmed0/quran-api) (الإصدار 8، ترقيم عثماني) المستند أصلاً إلى [qurancomplex.gov.sa](https://qurancomplex.gov.sa/). تم توحيد ترقيم الآيات وفق الرسم العثماني لضمان التوافق بين الروايتين.
+> مصدر نص ورش: [fawazahmed0/quran-api](https://github.com/fawazahmed0/quran-api) (`ara-quranwarsh`، الإصدار 8، ترقيم عثماني). يُجري هذا الإصدار استبدالاً لبعض رموز التشكيل ليتوافق مع معيار يونيكود (`U+0656→U+08F2`، `U+0657→U+08F0`، `U+065E→U+08F1`)، ويجب استخدامه مع خط `warsh-v8-full` المقابل. تم توحيد ترقيم الآيات وفق الرسم العثماني لضمان التوافق بين الروايتين.
 
 ## اختصارات لوحة المفاتيح
 
@@ -157,7 +156,7 @@ assets/text/
 ## الاعتمادات
 
 - **نص القرآن والخطوط:** [مجمع الملك فهد لطباعة المصحف الشريف (KFGQPC)](https://qurancomplex.gov.sa/quran-dev/)
-  - خط ورش: `uthmanic_warsh_v21.ttf` (خط عثماني مغربي لرواية ورش)
+  - خط ورش: `warsh-v8-full.ttf` — خط KFGQPC ورش المُخصَّص عبر [fawazahmed0/quran-api](https://github.com/fawazahmed0/quran-api)، مُعدَّل للعمل مع نص `ara-quranwarsh`
   - خط حفص: `uthmanic_hafs_v20.ttf` (خط KFGQPC العثماني لرواية حفص)
 - **مصدر نص ورش:** [fawazahmed0/quran-api](https://github.com/fawazahmed0/quran-api)
 - **الصوت:** [VerseByVerseQuran.com](https://www.versebyversequran.com/)

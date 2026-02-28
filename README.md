@@ -33,7 +33,6 @@ A lightweight, offline/online-friendly Mushaf web app (Arabic / RTL) supporting 
 - Playback speed (0.5×–2×) and repeat controls (including infinite)
 - Adjustable Qur'an text font size
 - Active ayah highlighting with auto-scroll
-- Ayah end markers (ﰀ ﰁ ﰂ …) rendered via KFGQPC PUA glyphs
 - Toggle fullscreen reading mode
 - Settings persist via `localStorage` across sessions
 
@@ -138,9 +137,9 @@ Both files share the same JSON structure:
 }
 ```
 
-The `aya_no_marker` field contains the KFGQPC PUA glyph (`U+FC00 + aya_no - 1`) rendered by the Uthmanic fonts as the decorative ayah end ornament.
+The `aya_no_marker` field contains the KFGQPC PUA glyph (`U+FC00 + aya_no - 1`) used by Hafs. For Warsh, the app ignores this field and instead renders Arabic-Indic digits (e.g. `٣`) directly — compatible with the `warsh-v8-full` font and any standard Arabic font.
 
-> The Warsh text is sourced from [fawazahmed0/quran-api](https://github.com/fawazahmed0/quran-api) (version 8, Uthmanic verse numbering) which itself originates from [qurancomplex.gov.sa](https://qurancomplex.gov.sa/). Verse numbering has been aligned to the Uthmanic standard for cross-riwaya compatibility.
+> The Warsh text is sourced from [fawazahmed0/quran-api](https://github.com/fawazahmed0/quran-api) (`ara-quranwarsh`, version 8, Uthmanic verse numbering). This edition replaces certain diacritic characters to conform to the Unicode standard (`U+0656→U+08F2`, `U+0657→U+08F0`, `U+065E→U+08F1`) and must be used with the matching `warsh-v8-full` font. Verse numbering has been aligned to the Uthmanic standard for cross-riwaya compatibility.
 
 ## Keyboard Shortcuts
 
@@ -155,7 +154,7 @@ The `aya_no_marker` field contains the KFGQPC PUA glyph (`U+FC00 + aya_no - 1`) 
 ## Credits
 
 - **Qur'an text & fonts:** [King Fahd Glorious Qur'an Printing Complex (KFGQPC)](https://qurancomplex.gov.sa/quran-dev/)
-  - Warsh font: `uthmanic_warsh_v21.ttf` (Maghribi-style Uthmanic Warsh script)
+  - Warsh font: `warsh-v8-full.ttf` — customised KFGQPC Warsh font via [fawazahmed0/quran-api](https://github.com/fawazahmed0/quran-api), tuned for the `ara-quranwarsh` text edition
   - Hafs font: `uthmanic_hafs_v20.ttf` (KFGQPC Hafs Uthmanic script)
 - **Warsh source text:** [fawazahmed0/quran-api](https://github.com/fawazahmed0/quran-api)
 - **Audio:** [VerseByVerseQuran.com](https://www.versebyversequran.com/)
