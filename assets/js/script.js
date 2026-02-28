@@ -122,6 +122,35 @@ function activateAyahInDOM(suraNo, ayahNo) {
   return el;
 }
 
+/** Convert Western digits to Arabic-Indic numerals  */
+function toArabicIndic(n) {
+  return String(n).replace(/\d/g, (d) =>
+    String.fromCharCode(0x0660 + parseInt(d)),
+  );
+}
+
+/**
+ * Build the end-of-ayah marker:
+ *  - warsh: Arabic-Indic digits only
+ *  - hafs:  use the pre-built aya_no_marker from the data
+ */
+function ayahMarker(ayah) {
+  if (state.currentRiwaya === 'warsh') {
+    return toArabicIndic(ayah.aya_no);
+  }
+  return ayah.aya_no_marker || '';
+}
+
+/**
+ * Return aya_text with the old 0xFC00-range glyph stripped (warsh only),
+ */
+function ayahText(ayah) {
+  if (state.currentRiwaya === 'warsh') {
+    return ayah.aya_text.replace(/[\uFC00-\uFDFF]/g, '').trimEnd();
+  }
+  return ayah.aya_text;
+}
+
 /** Build the audio file path for a given reciter and ayah */
 function buildAudioPath(reciter, suraNo, ayahNo) {
   const cfg = RIWAYA_CONFIG[state.currentRiwaya];
@@ -582,8 +611,7 @@ function displayPage(pageNum, keepCurrentSura = false) {
     ayahSpan.dataset.sura = ayah.sura_no;
     ayahSpan.dataset.ayah = ayah.aya_no;
     ayahSpan.dataset.id = ayah.id;
-    ayahSpan.textContent =
-      ayah.aya_text + ' ' + (ayah.aya_no_marker || '') + ' ';
+    ayahSpan.textContent = ayahText(ayah) + ' ' + ayahMarker(ayah) + ' ';
     ayahSpan.addEventListener('click', (e) =>
       handleAyahClickWithToggle(e, ayah),
     );
