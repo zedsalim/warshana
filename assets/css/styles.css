@@ -805,6 +805,149 @@ body.fullscreen-mode .fab-fullscreen-exit {
   text-decoration: underline !important;
 }
 
+/* ── Report Error Button (inside About modal) ──────────────────────────────── */
+
+.about-card-report {
+  background-color: color-mix(in srgb, var(--c-brown) 6%, var(--c-surface));
+  border-color: var(--c-brown) !important;
+}
+
+.about-report-btn {
+  background-color: var(--c-brown);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Amiri', Arial, sans-serif;
+  font-size: 1rem;
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
+}
+
+.about-report-btn:hover {
+  background-color: var(--c-brown-dk);
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+/* ── Report Modal ───────────────────────────────────────────────────────────── */
+
+.report-modal-content {
+  background-color: var(--c-bg);
+  border: 1px solid var(--c-border);
+  color: var(--c-text);
+  font-family: 'Amiri', Arial, sans-serif;
+  direction: rtl;
+}
+
+.report-modal-header {
+  background: linear-gradient(
+    135deg,
+    var(--c-brown-dk) 0%,
+    var(--c-brown) 100%
+  );
+}
+
+.report-label {
+  color: var(--c-text-md);
+  font-size: 0.95rem;
+  margin-bottom: 0.3rem;
+}
+
+.report-input {
+  background-color: var(--c-surface);
+  border-color: var(--c-border);
+  color: var(--c-text);
+  font-family: 'Amiri', Arial, sans-serif;
+  border-radius: 6px;
+}
+
+.report-input:focus {
+  background-color: #fff;
+  border-color: var(--c-brown);
+  box-shadow: 0 0 0 3px rgba(141, 110, 99, 0.18);
+  color: var(--c-text);
+}
+
+.report-input::placeholder {
+  color: var(--c-text-lt);
+  opacity: 0.6;
+}
+
+textarea.report-input {
+  resize: vertical;
+  min-height: 90px;
+}
+
+.report-hint {
+  font-size: 0.82rem;
+  color: var(--c-text-lt);
+}
+
+.report-status {
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.report-status--success {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #a5d6a7;
+}
+
+.report-status--error {
+  background: #ffebee;
+  color: #c62828;
+  border: 1px solid #ef9a9a;
+}
+
+.report-submit-btn {
+  background-color: var(--c-brown);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Amiri', Arial, sans-serif;
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
+}
+
+.report-submit-btn:hover:not(:disabled) {
+  background-color: var(--c-brown-dk);
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+.report-submit-btn:disabled {
+  background-color: #c4a99e;
+  color: #fff;
+  cursor: not-allowed;
+}
+
+/* ── Report inline field validation ────────────────────────────────────────── */
+
+.report-field-error {
+  font-size: 0.82rem;
+  color: #c62828;
+  min-height: 1.1rem;
+  margin-top: 0.25rem;
+}
+
+.report-input--error {
+  border-color: #c62828 !important;
+  background-color: #fff8f8 !important;
+}
+
+.report-input--error:focus {
+  box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.15) !important;
+}
+
 /* ── Print ─────────────────────────────────────────────────────────────────── */
 
 @media print {

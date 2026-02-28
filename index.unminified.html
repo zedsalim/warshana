@@ -485,6 +485,29 @@
               </p>
             </div>
 
+            <div class="about-card about-card-report rounded-3 border p-3">
+              <h6
+                class="about-card-title fw-bold mb-2 d-flex align-items-center gap-2"
+              >
+                <i class="bi bi-flag-fill"></i> لاحظتَ خطأً؟
+              </h6>
+              <p class="about-text fs-5 lh-lg mb-3">
+                إذا وجدتَ خطأً في النص أو الصوت أو أي جانب آخر، لا تتردد في
+                إخبارنا.
+              </p>
+              <button
+                type="button"
+                class="btn about-report-btn fw-bold d-flex align-items-center gap-2 px-4 py-2"
+                data-bs-dismiss="modal"
+                data-bs-toggle="modal"
+                data-bs-target="#reportModal"
+                onclick="prefillReportModal()"
+              >
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                أبلغ عن خطأ
+              </button>
+            </div>
+
             <div class="about-card rounded-3 border p-3">
               <h6
                 class="about-card-title fw-bold mb-2 d-flex align-items-center gap-2"
@@ -552,6 +575,13 @@
                     rel="noopener noreferrer"
                     class="about-link text-decoration-none"
                     >مجمع الملك فهد</a
+                  >,
+                  <a
+                    href="https://github.com/fawazahmed0/quran-api"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="about-link text-decoration-none"
+                    >Quran API</a
                   >
                 </li>
                 <li>
@@ -566,6 +596,192 @@
                 </li>
               </ul>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Report Error Modal -->
+    <div
+      class="modal fade"
+      id="reportModal"
+      tabindex="-1"
+      aria-labelledby="reportModalLabel"
+      aria-hidden="true"
+    >
+      <div
+        class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg"
+      >
+        <div
+          class="modal-content report-modal-content rounded-4 overflow-hidden"
+        >
+          <div class="modal-header report-modal-header border-0 py-3 px-4">
+            <h5
+              class="modal-title fw-bold text-white fs-5 d-flex align-items-center gap-2"
+              id="reportModalLabel"
+            >
+              <i class="bi bi-exclamation-triangle-fill"></i>
+              أبلغ عن خطأ
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+              style="filter: invert(1)"
+            ></button>
+          </div>
+
+          <div class="modal-body p-4">
+            <form id="reportForm" novalidate>
+              <!-- Email -->
+              <div class="mb-3">
+                <label for="r-email" class="form-label report-label fw-bold">
+                  <i class="bi bi-envelope-fill me-1"></i> البريد الإلكتروني *
+                </label>
+                <input
+                  type="email"
+                  id="r-email"
+                  class="form-control report-input"
+                  placeholder="example@email.com"
+                  required
+                  dir="ltr"
+                />
+                <div class="report-field-error" id="err-email"></div>
+              </div>
+
+              <!-- Type + Subject row -->
+              <div class="row g-3 mb-3">
+                <div class="col-12 col-sm-5">
+                  <label for="r-type" class="form-label report-label fw-bold">
+                    <i class="bi bi-tag-fill me-1"></i> نوع الرسالة *
+                  </label>
+                  <select id="r-type" class="form-select report-input" required>
+                    <option value="" disabled selected>اختر...</option>
+                    <option value="error_report">إبلاغ عن خطأ</option>
+                    <option value="suggestion">اقتراح</option>
+                    <option value="notes">ملاحظة</option>
+                  </select>
+                  <div class="report-field-error" id="err-type"></div>
+                </div>
+                <div class="col-12 col-sm-7">
+                  <label
+                    for="r-subject"
+                    class="form-label report-label fw-bold"
+                  >
+                    <i class="bi bi-card-heading me-1"></i> عنوان الموضوع *
+                  </label>
+                  <input
+                    type="text"
+                    id="r-subject"
+                    class="form-control report-input"
+                    placeholder="ملخص قصير"
+                    required
+                  />
+                  <div class="report-field-error" id="err-subject"></div>
+                </div>
+              </div>
+
+              <!-- Riwaya -->
+              <div class="mb-3">
+                <label for="r-riwaya" class="form-label report-label fw-bold">
+                  <i class="bi bi-mic-fill me-1"></i> الرواية *
+                </label>
+                <select id="r-riwaya" class="form-select report-input" required>
+                  <option value="" disabled selected>اختر الرواية...</option>
+                  <option value="warsh">ورش عن نافع</option>
+                  <option value="hafs">حفص عن عاصم</option>
+                </select>
+                <div class="report-field-error" id="err-riwaya"></div>
+              </div>
+
+              <!-- Sura AR -->
+              <div class="mb-3">
+                <label for="r-sura-ar" class="form-label report-label fw-bold">
+                  <i class="bi bi-book-fill me-1"></i> السورة *
+                </label>
+                <select
+                  id="r-sura-ar"
+                  class="form-select report-input"
+                  required
+                >
+                  <option value="" disabled selected>اختر السورة...</option>
+                </select>
+                <div class="report-field-error" id="err-sura-ar"></div>
+              </div>
+
+              <!-- Page + Aya row -->
+              <div class="row g-3 mb-3">
+                <div class="col-6">
+                  <label for="r-page" class="form-label report-label fw-bold">
+                    <i class="bi bi-file-text-fill me-1"></i> الصفحة *
+                  </label>
+                  <select id="r-page" class="form-select report-input" required>
+                    <option value="" disabled selected>—</option>
+                  </select>
+                  <div class="report-field-error" id="err-page"></div>
+                </div>
+                <div class="col-6">
+                  <label for="r-aya" class="form-label report-label fw-bold">
+                    <i class="bi bi-hash me-1"></i> الآية *
+                  </label>
+                  <select id="r-aya" class="form-select report-input" required>
+                    <option value="" disabled selected>—</option>
+                  </select>
+                  <div class="report-field-error" id="err-aya"></div>
+                </div>
+              </div>
+
+              <!-- Details -->
+              <div class="mb-3">
+                <label for="r-details" class="form-label report-label fw-bold">
+                  <i class="bi bi-chat-text-fill me-1"></i> تفاصيل الرسالة *
+                </label>
+                <textarea
+                  id="r-details"
+                  class="form-control report-input"
+                  rows="4"
+                  placeholder="صِف الخطأ أو الاقتراح بالتفصيل..."
+                  required
+                ></textarea>
+                <div class="report-field-error" id="err-details"></div>
+              </div>
+
+              <!-- Attachments -->
+              <div class="mb-4">
+                <label for="r-upload" class="form-label report-label fw-bold">
+                  <i class="bi bi-paperclip me-1"></i> مرفقات (اختياري)
+                </label>
+                <input
+                  type="file"
+                  id="r-upload"
+                  class="form-control report-input"
+                  accept="image/*,application/pdf"
+                  multiple
+                />
+                <small class="report-hint mt-1 d-block">
+                  يمكنك إرفاق صور أو ملفات PDF. اضغط Ctrl/Cmd لاختيار أكثر من
+                  ملف.
+                </small>
+              </div>
+
+              <!-- Status message -->
+              <div
+                id="r-status"
+                class="report-status mb-3"
+                style="display: none"
+              ></div>
+
+              <!-- Submit -->
+              <button
+                type="submit"
+                id="r-submit-btn"
+                class="btn report-submit-btn fw-bold w-100 py-2 fs-5"
+              >
+                <i class="bi bi-send-fill me-2"></i>
+                إرسال التقرير
+              </button>
+            </form>
           </div>
         </div>
       </div>
@@ -616,6 +832,8 @@
 
     <!-- Custom Script -->
     <!-- <script src="assets/js/script.min.js"></script> -->
+    <!-- <script src="assets/js/report.min.js"></script> -->
     <script src="assets/js/script.js"></script>
+    <script src="assets/js/report.js"></script>
   </body>
 </html>

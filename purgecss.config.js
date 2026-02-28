@@ -1,7 +1,7 @@
 // npx purgecss --config purgecss.config.js
 module.exports = {
   css: ['assets/css/bootstrap.rtl.min.css'],
-  content: ['index.html', 'assets/js/script.js'],
+  content: ['index.html', 'assets/js/script.js', 'assets/js/report.js'],
   output: 'assets/css/bootstrap.rtl.min.purged.css',
   safelist: {
     standard: [
