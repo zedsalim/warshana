@@ -15,29 +15,28 @@ const WARSH_TIMER_MS = 5000;
  */
 const RIWAYA_CONFIG = {
   warsh: {
-    textFile: 'assets/text/warsh-quran.json',
+    textFile: 'assets/text/warsh-quran.min.json',
     audioDir: 'warsh',
     audioUrls: [
-      'assets/audio/quran_audio_urls-1_warsh.json',
-      'assets/audio/quran_audio_urls-2_warsh.json',
-      'assets/audio/quran_audio_urls-3_warsh.json',
-      'assets/audio/quran_audio_urls-4_warsh.json',
-      'assets/audio/quran_audio_urls-5_warsh.json',
+      'assets/audio/quran_audio_urls-1_warsh.min.json',
+      'assets/audio/quran_audio_urls-2_warsh.min.json',
+      'assets/audio/quran_audio_urls-3_warsh.min.json',
+      'assets/audio/quran_audio_urls-4_warsh.min.json',
+      'assets/audio/quran_audio_urls-5_warsh.min.json',
     ],
     font: 'Uthmanic',
     reciters: {
-      abdelbasset_abdessamad: 'عبد الباسط عبد الصمد',
       yassen_al_jazairi: 'ياسين الجزائري',
     },
   },
   hafs: {
-    textFile: 'assets/text/hafs-quran.json',
+    textFile: 'assets/text/hafs-quran.min.json',
     audioDir: 'hafs',
     audioUrls: [
-      'assets/audio/quran_audio_urls-1_hafs.json',
-      'assets/audio/quran_audio_urls-2_hafs.json',
-      'assets/audio/quran_audio_urls-3_hafs.json',
-      'assets/audio/quran_audio_urls-4_hafs.json',
+      'assets/audio/quran_audio_urls-1_hafs.min.json',
+      'assets/audio/quran_audio_urls-2_hafs.min.json',
+      'assets/audio/quran_audio_urls-3_hafs.min.json',
+      'assets/audio/quran_audio_urls-4_hafs.min.json',
     ],
     font: 'UthmanicHafs',
     reciters: {
