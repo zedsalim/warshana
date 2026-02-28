@@ -15,28 +15,28 @@ const WARSH_TIMER_MS = 5000;
  */
 const RIWAYA_CONFIG = {
   warsh: {
-    textFile: 'assets/text/UthmanicWarsh/warshData_v2-1.json',
+    textFile: 'assets/text/warsh-quran.min.json',
     audioDir: 'warsh',
     audioUrls: [
-      'assets/audio/quran_audio_urls-1_warsh.json',
-      'assets/audio/quran_audio_urls-2_warsh.json',
-      'assets/audio/quran_audio_urls-3_warsh.json',
-      'assets/audio/quran_audio_urls-4_warsh.json',
-      'assets/audio/quran_audio_urls-5_warsh.json',
+      'assets/audio/json/quran_audio_urls-1_warsh.min.json',
+      'assets/audio/json/quran_audio_urls-2_warsh.min.json',
+      'assets/audio/json/quran_audio_urls-3_warsh.min.json',
+      'assets/audio/json/quran_audio_urls-4_warsh.min.json',
+      'assets/audio/json/quran_audio_urls-5_warsh.min.json',
     ],
     font: 'Uthmanic',
     reciters: {
-      abdelbasset_abdessamad: 'عبد الباسط عبد الصمد',
+      yassen_al_jazairi: 'ياسين الجزائري',
     },
   },
   hafs: {
-    textFile: 'assets/text/UthmanicHafs/hafsData_v2-0.json',
+    textFile: 'assets/text/hafs-quran.min.json',
     audioDir: 'hafs',
     audioUrls: [
-      'assets/audio/quran_audio_urls-1_hafs.json',
-      'assets/audio/quran_audio_urls-2_hafs.json',
-      'assets/audio/quran_audio_urls-3_hafs.json',
-      'assets/audio/quran_audio_urls-4_hafs.json',
+      'assets/audio/json/quran_audio_urls-1_hafs.min.json',
+      'assets/audio/json/quran_audio_urls-2_hafs.min.json',
+      'assets/audio/json/quran_audio_urls-3_hafs.min.json',
+      'assets/audio/json/quran_audio_urls-4_hafs.min.json',
     ],
     font: 'UthmanicHafs',
     reciters: {
@@ -120,6 +120,35 @@ function activateAyahInDOM(suraNo, ayahNo) {
   );
   setActiveAyahElement(el);
   return el;
+}
+
+/** Convert Western digits to Arabic-Indic numerals  */
+function toArabicIndic(n) {
+  return String(n).replace(/\d/g, (d) =>
+    String.fromCharCode(0x0660 + parseInt(d)),
+  );
+}
+
+/**
+ * Build the end-of-ayah marker:
+ *  - warsh: Arabic-Indic digits only
+ *  - hafs:  use the pre-built aya_no_marker from the data
+ */
+function ayahMarker(ayah) {
+  if (state.currentRiwaya === 'warsh') {
+    return toArabicIndic(ayah.aya_no);
+  }
+  return ayah.aya_no_marker || '';
+}
+
+/**
+ * Return aya_text with the old 0xFC00-range glyph stripped (warsh only),
+ */
+function ayahText(ayah) {
+  if (state.currentRiwaya === 'warsh') {
+    return ayah.aya_text.replace(/[\uFC00-\uFDFF]/g, '').trimEnd();
+  }
+  return ayah.aya_text;
 }
 
 /** Build the audio file path for a given reciter and ayah */
@@ -566,7 +595,8 @@ function displayPage(pageNum, keepCurrentSura = false) {
         if (
           surahsStartingOnPage.has(ayah.sura_no) &&
           ayah.sura_no !== SURAH_NO_BASMALA &&
-          !(state.currentRiwaya === 'hafs' && ayah.sura_no === 1)
+          !(state.currentRiwaya === 'hafs' && ayah.sura_no === 1) &&
+          !(state.currentRiwaya === 'warsh' && ayah.sura_no === 1)
         ) {
           const basmalaDiv = document.createElement('div');
           basmalaDiv.className = 'basmala';
@@ -581,7 +611,7 @@ function displayPage(pageNum, keepCurrentSura = false) {
     ayahSpan.dataset.sura = ayah.sura_no;
     ayahSpan.dataset.ayah = ayah.aya_no;
     ayahSpan.dataset.id = ayah.id;
-    ayahSpan.textContent = ayah.aya_text + ' ';
+    ayahSpan.textContent = ayahText(ayah) + ' ' + ayahMarker(ayah) + ' ';
     ayahSpan.addEventListener('click', (e) =>
       handleAyahClickWithToggle(e, ayah),
     );
@@ -1015,6 +1045,10 @@ function stopAudio() {
 
   updatePauseButton();
   syncBottomPlayIcon();
+  clearProgressHideTimeout();
+  stopProgressRAF();
+  setAudioProgressActive(false);
+  setAudioProgress(0);
 }
 
 function togglePauseResume() {
@@ -1051,39 +1085,30 @@ function updatePauseButton() {
   if (pauseBtn) pauseBtn.innerHTML = html;
 }
 
-/** Switch the reciter while audio is actively playing */
+/** Switch the reciter while audio is actively playing or paused */
 async function changeReciterDuringPlayback(newReciter) {
-  if (!state.isPlaying || !state.currentAyah || !state.audioPlayer) return;
+  if (!state.currentAyah || !state.audioPlayer) return;
 
-  if (!state.audioPlayer.paused) {
-    const currentPlayingAyah = state.playQueue[state.currentPlayIndex];
-    const useLocal = await checkLocalAudioAvailable(
-      newReciter,
-      currentPlayingAyah.sura_no,
-    );
-    state.useLocalAudio = useLocal;
+  const isActivelyPlaying = !state.audioPlayer.paused;
+  const isPaused = state.audioPlayer.paused && hasActiveAudioSrc();
 
-    const audioSrc = useLocal
-      ? buildAudioPath(
-          newReciter,
-          currentPlayingAyah.sura_no,
-          currentPlayingAyah.aya_no,
-        )
-      : getFallbackAudioUrl(
-          newReciter,
-          currentPlayingAyah.sura_no,
-          currentPlayingAyah.aya_no,
-        ) ||
-        buildAudioPath(
-          newReciter,
-          currentPlayingAyah.sura_no,
-          currentPlayingAyah.aya_no,
-        );
+  if (!isActivelyPlaying && !isPaused) return;
 
-    state.audioPlayer.src = audioSrc;
-    state.audioPlayer.playbackRate = parseFloat(
-      getEl('speed-control')?.value || '1',
-    );
+  const ayah = state.playQueue[state.currentPlayIndex] ?? state.currentAyah;
+  const useLocal = await checkLocalAudioAvailable(newReciter, ayah.sura_no);
+  state.useLocalAudio = useLocal;
+
+  const audioSrc = useLocal
+    ? buildAudioPath(newReciter, ayah.sura_no, ayah.aya_no)
+    : getFallbackAudioUrl(newReciter, ayah.sura_no, ayah.aya_no) ||
+      buildAudioPath(newReciter, ayah.sura_no, ayah.aya_no);
+
+  state.audioPlayer.src = audioSrc;
+  state.audioPlayer.playbackRate = parseFloat(
+    getEl('speed-control')?.value || '1',
+  );
+
+  if (isActivelyPlaying) {
     state.audioPlayer.play().catch((error) => {
       console.error('Error playing audio with new reciter:', error);
     });
@@ -1537,13 +1562,89 @@ function initializeBottomControls() {
 
   const player = getEl('audio-player');
   if (player) {
-    player.addEventListener('play', () => setTimeout(syncBottomPlayIcon, 50));
-    player.addEventListener('pause', () => setTimeout(syncBottomPlayIcon, 50));
-    player.addEventListener('ended', () => setTimeout(syncBottomPlayIcon, 50));
+    player.addEventListener('play', () => {
+      setTimeout(syncBottomPlayIcon, 50);
+      clearProgressHideTimeout();
+      setAudioProgressActive(true);
+      startProgressRAF();
+    });
+    player.addEventListener('pause', () => {
+      setTimeout(syncBottomPlayIcon, 50);
+      stopProgressRAF();
+      setAudioProgressActive(false);
+    });
+    player.addEventListener('ended', () => {
+      setTimeout(syncBottomPlayIcon, 50);
+      stopProgressRAF();
+      setAudioProgress(1);
+      _progressHideTimeoutId = setTimeout(() => {
+        setAudioProgressActive(false);
+        setAudioProgress(0);
+      }, 300);
+    });
+    player.addEventListener('emptied', () => {
+      clearProgressHideTimeout();
+      stopProgressRAF();
+      setAudioProgressActive(false);
+      setAudioProgress(0);
+    });
   }
 
   const speedSel = getEl('speed-control');
   if (speedSel) speedSel.addEventListener('change', syncBottomSpeedLabel);
+}
+
+// ─── Audio progress RAF helpers ───────────────────────────────────────────────
+
+let _progressRAFId = null;
+let _progressHideTimeoutId = null;
+
+function clearProgressHideTimeout() {
+  if (_progressHideTimeoutId !== null) {
+    clearTimeout(_progressHideTimeoutId);
+    _progressHideTimeoutId = null;
+  }
+}
+
+/** Start a requestAnimationFrame loop that keeps the strip in sync with audio */
+function startProgressRAF() {
+  stopProgressRAF();
+  const player = getEl('audio-player');
+  if (!player) return;
+
+  function frame() {
+    if (player.duration > 0) {
+      setAudioProgress(player.currentTime / player.duration);
+    }
+    _progressRAFId = requestAnimationFrame(frame);
+  }
+  _progressRAFId = requestAnimationFrame(frame);
+}
+
+/** Cancel the running RAF loop */
+function stopProgressRAF() {
+  if (_progressRAFId !== null) {
+    cancelAnimationFrame(_progressRAFId);
+    _progressRAFId = null;
+  }
+}
+
+/**
+ * Show or hide the audio progress strip.
+ * @param {boolean} active
+ */
+function setAudioProgressActive(active) {
+  const strip = getEl('audio-progress-strip');
+  if (strip) strip.classList.toggle('is-playing', active);
+}
+
+/**
+ * Set the strip fill width directly.
+ * @param {number} ratio — 0.0 to 1.0
+ */
+function setAudioProgress(ratio) {
+  const fill = getEl('audio-progress-fill');
+  if (fill) fill.style.width = (Math.min(ratio, 1) * 100).toFixed(3) + '%';
 }
 
 // ─── Utilities ──────────────────────────────────────────────────────

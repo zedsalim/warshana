@@ -1,3 +1,4 @@
+// npx purgecss --config purgecss.config.js
 module.exports = {
   css: ['assets/css/bootstrap.rtl.min.css'],
   content: ['index.html', 'assets/js/script.js'],
