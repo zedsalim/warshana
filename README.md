@@ -88,7 +88,7 @@ Audio is organised by riwaya:
 assets/
 └── audio/
     ├── warsh/
-    │   └── abdelbasset_abdessamad/   ← Warsh reciter folder
+    │   └── reciter_name/   ← Warsh reciter folder
     │       ├── 001/
     │       │   ├── 001.mp3
     │       │   ├── 002.mp3
@@ -96,7 +96,7 @@ assets/
     │       ├── 002/
     │       └── ...
     └── hafs/
-        └── abdelbasset_abdessamad/           ← Hafs reciter folder
+        └── reciter_name/      ← Hafs reciter folder
             ├── 001/
             │   ├── 001.mp3
             │   └── ...
@@ -115,7 +115,7 @@ Qur'an text is stored in `assets/text/` separated by riwaya:
 
 ```
 assets/text/
-├── warsh-quran.json         ← Warsh text (KFGQPC v2.1, Uthmanic verse numbering)
+├── warsh-quran.json         ← Warsh text (KFGQPC, standard 6214-ayah verse numbering)
 └── hafs-quran.json          ← Hafs text (KFGQPC v2.0)
 ```
 
@@ -137,9 +137,7 @@ Both files share the same JSON structure:
 }
 ```
 
-The `aya_no_marker` field contains the KFGQPC PUA glyph (`U+FC00 + aya_no - 1`) used by Hafs. For Warsh, the app ignores this field and instead renders Arabic-Indic digits (e.g. `٣`) directly — compatible with the `warsh-v8-full` font and any standard Arabic font.
-
-> The Warsh text is sourced from [fawazahmed0/quran-api](https://github.com/fawazahmed0/quran-api) (`ara-quranwarsh`, version 8, Uthmanic verse numbering). This edition replaces certain diacritic characters to conform to the Unicode standard (`U+0656→U+08F2`, `U+0657→U+08F0`, `U+065E→U+08F1`) and must be used with the matching `warsh-v8-full` font. Verse numbering has been aligned to the Uthmanic standard for cross-riwaya compatibility.
+The `aya_no_marker` field contains the KFGQPC PUA glyph used to render the end-of-ayah circle and number. Both Warsh and Hafs editions use these embedded markers directly from the font.
 
 ## Keyboard Shortcuts
 
@@ -154,8 +152,8 @@ The `aya_no_marker` field contains the KFGQPC PUA glyph (`U+FC00 + aya_no - 1`) 
 ## Credits
 
 - **Qur'an text & fonts:** [King Fahd Glorious Qur'an Printing Complex (KFGQPC)](https://qurancomplex.gov.sa/quran-dev/)
-  - Warsh font: `warsh-v8-full.ttf` — customised KFGQPC Warsh font via [fawazahmed0/quran-api](https://github.com/fawazahmed0/quran-api), tuned for the `ara-quranwarsh` text edition
+  - Warsh font: `uthmanic_warsh_v21.ttf` (KFGQPC Warsh Uthmanic script)
   - Hafs font: `uthmanic_hafs_v20.ttf` (KFGQPC Hafs Uthmanic script)
-- **Warsh source text:** [fawazahmed0/quran-api](https://github.com/fawazahmed0/quran-api)
-- **Audio:** [VerseByVerseQuran.com](https://www.versebyversequran.com/)
+- **Warsh audio:** [mp3quran.net](https://mp3quran.net/) (ayah-split MP3s, 6,214-ayah count)
+- **Hafs audio:** [VerseByVerseQuran.com](https://www.versebyversequran.com/)
 - **UI framework:** Bootstrap 5 RTL

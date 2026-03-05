@@ -90,7 +90,7 @@ npx serve .
 assets/
 └── audio/
     ├── warsh/
-    │   └── abdelbasset_abdessamad/   ← مجلد قارئ ورش
+    │   └── reciter_name/   ← مجلد قارئ ورش
     │       ├── 001/
     │       │   ├── 001.mp3
     │       │   ├── 002.mp3
@@ -98,7 +98,7 @@ assets/
     │       ├── 002/
     │       └── ...
     └── hafs/
-        └── abdelbasset_abdessamad/   ← مجلد قارئ حفص
+        └── reciter_name/      ← مجلد قارئ حفص
             ├── 001/
             │   ├── 001.mp3
             │   └── ...
@@ -117,7 +117,7 @@ assets/
 
 ```
 assets/text/
-├── warsh-quran.json         ← نص ورش (KFGQPC الإصدار 2.1، ترقيم عثماني)
+├── warsh-quran.json         ← نص ورش (KFGQPC، ترقيم 6214 آية)
 └── hafs-quran.json          ← نص حفص (KFGQPC الإصدار 2.0)
 ```
 
@@ -139,9 +139,7 @@ assets/text/
 }
 ```
 
-حقل `aya_no_marker` يحتوي على حرف KFGQPC الخاص (`U+FC00 + aya_no - 1`) المستخدم في رواية حفص. أما في رواية ورش، فيتجاهل التطبيق هذا الحقل ويعرض الأرقام العربية الهندية مباشرةً (مثل `٣`) — وهي متوافقة مع خط `warsh-v8-full` وأي خط عربي قياسي.
-
-> مصدر نص ورش: [fawazahmed0/quran-api](https://github.com/fawazahmed0/quran-api) (`ara-quranwarsh`، الإصدار 8، ترقيم عثماني). يُجري هذا الإصدار استبدالاً لبعض رموز التشكيل ليتوافق مع معيار يونيكود (`U+0656→U+08F2`، `U+0657→U+08F0`، `U+065E→U+08F1`)، ويجب استخدامه مع خط `warsh-v8-full` المقابل. تم توحيد ترقيم الآيات وفق الرسم العثماني لضمان التوافق بين الروايتين.
+يحتوي حقل `aya_no_marker` على رمز KFGQPC المخصص المُضمَّن في النص لعرض دائرة نهاية الآية ورقمها. تستخدم روايتا ورش وحفص هذه الرموز مباشرةً من الخط دون أي تحويل على مستوى التطبيق.
 
 ## اختصارات لوحة المفاتيح
 
@@ -156,8 +154,8 @@ assets/text/
 ## الاعتمادات
 
 - **نص القرآن والخطوط:** [مجمع الملك فهد لطباعة المصحف الشريف (KFGQPC)](https://qurancomplex.gov.sa/quran-dev/)
-  - خط ورش: `warsh-v8-full.ttf` — خط KFGQPC ورش المُخصَّص عبر [fawazahmed0/quran-api](https://github.com/fawazahmed0/quran-api)، مُعدَّل للعمل مع نص `ara-quranwarsh`
+  - خط ورش: `uthmanic_warsh_v21.ttf` (خط KFGQPC العثماني لرواية ورش)
   - خط حفص: `uthmanic_hafs_v20.ttf` (خط KFGQPC العثماني لرواية حفص)
-- **مصدر نص ورش:** [fawazahmed0/quran-api](https://github.com/fawazahmed0/quran-api)
-- **الصوت:** [VerseByVerseQuran.com](https://www.versebyversequran.com/)
+- **صوت ورش:** [mp3quran.net](https://mp3quran.net/) (ملفات MP3 مقطّعة بعدد 6,214 آية)
+- **صوت حفص:** [VerseByVerseQuran.com](https://www.versebyversequran.com/)
 - **إطار واجهة المستخدم:** Bootstrap 5 RTL
