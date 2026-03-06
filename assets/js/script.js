@@ -18,16 +18,13 @@ const RIWAYA_CONFIG = {
     textFile: 'assets/text/warsh-quran.min.json',
     audioDir: 'warsh',
     audioUrls: [
-      'assets/audio/json/cloud2-1_warsh.min.json',
-      // 'assets/audio/json/cloud1-1_warsh.min.json',
-      // 'assets/audio/json/cloud1-2_warsh.min.json',
-      // 'assets/audio/json/cloud1-3_warsh.min.json',
-      // 'assets/audio/json/cloud1-4_warsh.min.json',
-      // 'assets/audio/json/cloud1-5_warsh.min.json',
+      'assets/audio_cloud/warsh/minified/cloud2/abdelbasset_abdessamad.1.min.json',
+      'assets/audio_cloud/warsh/minified/cloud2/yassen_al_jazairi.1.min.json',
     ],
     font: 'UthmanicWarsh',
     reciters: {
       // 'mahmoud_khalil_al-hussary': 'محمود خليل الحصري',
+      abdelbasset_abdessamad: 'عبد الباسط عبد الصمد',
       yassen_al_jazairi: 'ياسين الجزائري',
     },
   },
@@ -35,10 +32,14 @@ const RIWAYA_CONFIG = {
     textFile: 'assets/text/hafs-quran.min.json',
     audioDir: 'hafs',
     audioUrls: [
-      'assets/audio/json/cloud1-1_hafs.min.json',
-      'assets/audio/json/cloud1-2_hafs.min.json',
-      'assets/audio/json/cloud1-3_hafs.min.json',
-      'assets/audio/json/cloud1-4_hafs.min.json',
+      'assets/audio_cloud/hafs/minified/cloud1/abdelbasset_abdessamad.1.min.json',
+      'assets/audio_cloud/hafs/minified/cloud1/abdelbasset_abdessamad.2.min.json',
+      'assets/audio_cloud/hafs/minified/cloud1/abdelbasset_abdessamad.3.min.json',
+      'assets/audio_cloud/hafs/minified/cloud1/abdelbasset_abdessamad.4.min.json',
+      'assets/audio_cloud/hafs/minified/cloud1/muhammad_siddiq_al-minshawi.1.min.json',
+      'assets/audio_cloud/hafs/minified/cloud1/muhammad_siddiq_al-minshawi.2.min.json',
+      'assets/audio_cloud/hafs/minified/cloud1/muhammad_siddiq_al-minshawi.3.min.json',
+      'assets/audio_cloud/hafs/minified/cloud1/muhammad_siddiq_al-minshawi.4.min.json',
     ],
     font: 'UthmanicHafs',
     reciters: {
@@ -129,7 +130,7 @@ function activateAyahInDOM(suraNo, ayahNo) {
 function buildAudioPath(reciter, suraNo, ayahNo) {
   const cfg = RIWAYA_CONFIG[state.currentRiwaya];
   const audioDir = cfg ? cfg.audioDir : state.currentRiwaya;
-  return `assets/audio/${audioDir}/${reciter}/${String(suraNo).padStart(3, '0')}/${String(ayahNo).padStart(3, '0')}.mp3`;
+  return `assets/audio_local/${audioDir}/${reciter}/${String(suraNo).padStart(3, '0')}/${String(ayahNo).padStart(3, '0')}.mp3`;
 }
 
 /**

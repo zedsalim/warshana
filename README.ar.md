@@ -87,22 +87,21 @@ npx serve .
 يتم تنظيم الصوت حسب الرواية:
 
 ```
-assets/
-└── audio/
-    ├── warsh/
-    │   └── reciter_name/   ← مجلد قارئ ورش
-    │       ├── 001/
-    │       │   ├── 001.mp3
-    │       │   ├── 002.mp3
-    │       │   └── ...
-    │       ├── 002/
-    │       └── ...
-    └── hafs/
-        └── reciter_name/      ← مجلد قارئ حفص
-            ├── 001/
-            │   ├── 001.mp3
-            │   └── ...
-            └── ...
+audio_local/
+├── warsh/
+│   └── reciter_name/   ← مجلد قارئ ورش
+│       ├── 001/
+│       │   ├── 001.mp3
+│       │   ├── 002.mp3
+│       │   └── ...
+│       ├── 002/
+│       └── ...
+└── hafs/
+    └── reciter_name/      ← مجلد قارئ حفص
+        ├── 001/
+        │   ├── 001.mp3
+        │   └── ...
+        └── ...
 ```
 
 > ⚠️ يجب أن تتطابق أسماء المجلدات تماماً مع مفاتيح القارئ المحددة في `RIWAYA_CONFIG` داخل `script.js`.
@@ -157,5 +156,5 @@ assets/text/
   - خط ورش: `uthmanic_warsh_v21.ttf` (خط KFGQPC العثماني لرواية ورش)
   - خط حفص: `uthmanic_hafs_v20.ttf` (خط KFGQPC العثماني لرواية حفص)
 - **صوت ورش:** [mp3quran.net](https://mp3quran.net/) (ملفات MP3 مقطّعة بعدد 6,214 آية)
-- **صوت حفص:** [VerseByVerseQuran.com](https://www.versebyversequran.com/)
+- **صوت حفص:** [VerseByVerseQuran.com](https://www.versebyversequran.com/)، [EveryAyah.com](https://everyayah.com/)
 - **إطار واجهة المستخدم:** Bootstrap 5 RTL

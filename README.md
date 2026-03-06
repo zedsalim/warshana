@@ -85,22 +85,21 @@ Download the reciter folder(s) from Google Drive:
 Audio is organised by riwaya:
 
 ```
-assets/
-└── audio/
-    ├── warsh/
-    │   └── reciter_name/   ← Warsh reciter folder
-    │       ├── 001/
-    │       │   ├── 001.mp3
-    │       │   ├── 002.mp3
-    │       │   └── ...
-    │       ├── 002/
-    │       └── ...
-    └── hafs/
-        └── reciter_name/      ← Hafs reciter folder
-            ├── 001/
-            │   ├── 001.mp3
-            │   └── ...
-            └── ...
+audio_local/
+├── warsh/
+│   └── reciter_name/   ← Warsh reciter folder
+│       ├── 001/
+│       │   ├── 001.mp3
+│       │   ├── 002.mp3
+│       │   └── ...
+│       ├── 002/
+│       └── ...
+└── hafs/
+    └── reciter_name/      ← Hafs reciter folder
+        ├── 001/
+        │   ├── 001.mp3
+        │   └── ...
+        └── ...
 ```
 
 > ⚠️ Folder names must match the reciter keys defined in `RIWAYA_CONFIG` inside `script.js` exactly.
@@ -155,5 +154,5 @@ The `aya_no_marker` field contains the KFGQPC PUA glyph used to render the end-o
   - Warsh font: `uthmanic_warsh_v21.ttf` (KFGQPC Warsh Uthmanic script)
   - Hafs font: `uthmanic_hafs_v20.ttf` (KFGQPC Hafs Uthmanic script)
 - **Warsh audio:** [mp3quran.net](https://mp3quran.net/) (ayah-split MP3s, 6,214-ayah count)
-- **Hafs audio:** [VerseByVerseQuran.com](https://www.versebyversequran.com/)
+- **Hafs audio:** [VerseByVerseQuran.com](https://www.versebyversequran.com/), [EveryAyah.com](https://everyayah.com/)
 - **UI framework:** Bootstrap 5 RTL
