@@ -152,5 +152,5 @@ python split_reciters.py --scan assets/audio_cloud
 - **نص القرآن والخطوط:** [مجمع الملك فهد لطباعة المصحف الشريف (KFGQPC)](https://qurancomplex.gov.sa/quran-dev/)
   - خط ورش: `uthmanic_warsh_v21.ttf` (خط KFGQPC العثماني لرواية ورش)
   - خط حفص: `uthmanic_hafs_v20.ttf` (خط KFGQPC العثماني لرواية حفص)
-- **الصوت:** [mp3quran.net](https://mp3quran.net/), [VerseByVerseQuran.com](https://www.versebyversequran.com/)، [EveryAyah.com](https://everyayah.com/)
+- **الصوت:** [mp3quran.net](https://mp3quran.net/), [VerseByVerseQuran.com](https://www.versebyversequran.com/)، [EveryAyah.com](https://everyayah.com/), [QuranPedia.net](https://quranpedia.net/)
 - **إطار واجهة المستخدم:** Bootstrap 5 RTL

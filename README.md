@@ -150,5 +150,5 @@ python split_reciters.py --scan assets/audio_cloud
 - **Qur'an text & fonts:** [King Fahd Glorious Qur'an Printing Complex (KFGQPC)](https://qurancomplex.gov.sa/quran-dev/)
   - Warsh font: `uthmanic_warsh_v21.ttf` (KFGQPC Warsh Uthmanic script)
   - Hafs font: `uthmanic_hafs_v20.ttf` (KFGQPC Hafs Uthmanic script)
-- **Audio:** [mp3quran.net](https://mp3quran.net/), [VerseByVerseQuran.com](https://www.versebyversequran.com/), [EveryAyah.com](https://everyayah.com/)
+- **Audio:** [mp3quran.net](https://mp3quran.net/), [VerseByVerseQuran.com](https://www.versebyversequran.com/), [EveryAyah.com](https://everyayah.com/), [QuranPedia.net](https://quranpedia.net/)
 - **UI framework:** Bootstrap 5 RTL
