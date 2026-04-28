@@ -772,6 +772,11 @@
                   ملف.</small
                 >
               </div>
+              <div class="mb-4">
+                <div id="r-turnstile" class="report-turnstile"></div>
+                <input type="hidden" id="r-captcha-token" />
+                <div class="report-field-error" id="err-captcha"></div>
+              </div>
               <div
                 id="r-status"
                 class="report-status mb-3"
@@ -857,6 +862,11 @@
     <!-- Custom Scripts -->
     <!-- <script src="assets/js/script.min.js"></script> -->
     <!-- <script src="assets/js/report.min.js"></script> -->
+    <script
+      src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&hl=ar"
+      async
+      defer
+    ></script>
     <script src="assets/js/script.js"></script>
     <script src="assets/js/report.js"></script>
   </body>
