@@ -237,6 +237,7 @@
 
   const FIELD_ERRORS = {
     'r-email': 'err-email',
+    'r-captcha-token': 'err-captcha',
     'r-type': 'err-type',
     'r-subject': 'err-subject',
     'r-riwaya': 'err-riwaya',
@@ -250,6 +251,9 @@
     'r-email': {
       empty: 'البريد الإلكتروني مطلوب.',
       invalid: 'أدخل بريداً إلكترونياً صحيحاً.',
+    },
+    'r-captcha-token': {
+      empty: 'يرجى إكمال التحقق الأمني.',
     },
     'r-type': { empty: 'يرجى اختيار نوع الرسالة.' },
     'r-subject': { empty: 'عنوان الموضوع مطلوب.' },
@@ -314,6 +318,7 @@
     .addEventListener('hidden.bs.modal', () => {
       document.getElementById('reportForm').reset();
       Object.keys(FIELD_ERRORS).forEach((id) => clearFieldError(id));
+      resetTurnstileWidget();
       const status = document.getElementById('r-status');
       status.style.display = 'none';
       status.className = 'report-status';
@@ -326,8 +331,141 @@
 
   // ── Form submission ──────────────────────────────────────────────────────
 
+  const TURNSTILE_SITE_KEY = 'YOUR_CLOUDFLARE_TURNSTILE_SITE_KEY';
+  const TURNSTILE_WIDGET_CONTAINER_ID = 'r-turnstile';
+  const TURNSTILE_SCRIPT_SRC =
+    'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&hl=ar';
+  let turnstileWidgetId = null;
+
   const REPORT_SCRIPT_URL =
     'https://script.google.com/macros/s/AKfycbz0a0HARrBElD6zDXmfGLNTxwxLQT4YCw_HQ-mDKocRfwrogIy3cdBH9UQ2eFwlNbdcEA/exec';
+
+  function getCaptchaToken() {
+    const input = document.getElementById('r-captcha-token');
+    return input ? input.value.trim() : '';
+  }
+
+  function setCaptchaToken(token) {
+    const input = document.getElementById('r-captcha-token');
+    if (input) input.value = token || '';
+    if (token) clearFieldError('r-captcha-token');
+  }
+
+  function ensureTurnstileMarkup() {
+    if (
+      document.getElementById(TURNSTILE_WIDGET_CONTAINER_ID) &&
+      document.getElementById('r-captcha-token')
+    ) {
+      return;
+    }
+
+    const form = document.getElementById('reportForm');
+    const statusEl = document.getElementById('r-status');
+    if (!form || !statusEl) return;
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'mb-4';
+    wrapper.innerHTML =
+      '<div id="r-turnstile" class="report-turnstile"></div>' +
+      '<input type="hidden" id="r-captcha-token" />' +
+      '<div class="report-field-error" id="err-captcha"></div>';
+
+    form.insertBefore(wrapper, statusEl);
+  }
+
+  function loadTurnstileScript() {
+    return new Promise((resolve, reject) => {
+      if (window.turnstile) {
+        resolve();
+        return;
+      }
+
+      const existingScript = document.querySelector(
+        'script[src^="https://challenges.cloudflare.com/turnstile/"]',
+      );
+      if (existingScript) {
+        existingScript.addEventListener('load', () => resolve(), { once: true });
+        existingScript.addEventListener('error', () => reject(new Error('Turnstile script failed to load.')), {
+          once: true,
+        });
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = TURNSTILE_SCRIPT_SRC;
+      script.async = true;
+      script.defer = true;
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error('Turnstile script failed to load.'));
+      document.head.appendChild(script);
+    });
+  }
+
+  function resetTurnstileWidget() {
+    setCaptchaToken('');
+    if (window.turnstile && turnstileWidgetId !== null) {
+      window.turnstile.reset(turnstileWidgetId);
+    }
+  }
+
+  function renderTurnstileWidget() {
+    const container = document.getElementById(TURNSTILE_WIDGET_CONTAINER_ID);
+    if (
+      !container ||
+      turnstileWidgetId !== null ||
+      !window.turnstile ||
+      !TURNSTILE_SITE_KEY ||
+      TURNSTILE_SITE_KEY.startsWith('YOUR_')
+    ) {
+      return;
+    }
+
+    turnstileWidgetId = window.turnstile.render(container, {
+      sitekey: TURNSTILE_SITE_KEY,
+      language: 'ar',
+      theme: document.body.classList.contains('light-mode') ? 'light' : 'dark',
+      callback: (token) => {
+        setCaptchaToken(token);
+      },
+      'expired-callback': () => {
+        setCaptchaToken('');
+        showFieldError(
+          'r-captcha-token',
+          'انتهت صلاحية التحقق الأمني. يرجى المحاولة مرة أخرى.',
+        );
+      },
+      'error-callback': () => {
+        setCaptchaToken('');
+        showFieldError(
+          'r-captcha-token',
+          'تعذر تحميل التحقق الأمني. يرجى إعادة المحاولة.',
+        );
+      },
+    });
+  }
+
+  function ensureTurnstileWidget() {
+    if (turnstileWidgetId !== null) return;
+
+    ensureTurnstileMarkup();
+    loadTurnstileScript()
+      .then(() => {
+        renderTurnstileWidget();
+      })
+      .catch((error) => {
+        console.error(error);
+        showFieldError(
+          'r-captcha-token',
+          'تعذر تحميل التحقق الأمني. يرجى إعادة المحاولة.',
+        );
+      });
+  }
+
+  document
+    .getElementById('reportModal')
+    .addEventListener('shown.bs.modal', ensureTurnstileWidget);
+
+  ensureTurnstileWidget();
 
   const getBase64 = (file) =>
     new Promise((resolve, reject) => {
@@ -377,7 +515,13 @@
           sura_name_ar: suraAr,
           aya_no: document.getElementById('r-aya').value,
           page: document.getElementById('r-page').value,
+          turnstile_token: getCaptchaToken(),
         };
+
+        if (!payload.turnstile_token) {
+          showFieldError('r-captcha-token', 'يرجى إكمال التحقق الأمني.');
+          return;
+        }
 
         const fileInput = document.getElementById('r-upload');
         const filesArray = [];

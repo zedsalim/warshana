@@ -1278,6 +1278,12 @@ textarea.report-input {
   margin-top: 4px;
   display: block;
 }
+.report-turnstile {
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  min-height: 65px;
+}
 .report-status {
   padding: 10px 14px;
   border-radius: var(--radius-sm);
